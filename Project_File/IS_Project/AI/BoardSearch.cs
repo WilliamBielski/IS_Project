@@ -128,7 +128,7 @@ namespace IS_Project.AI
             }
         }
 
-        public List<(int, int)> findPlayerRoute(int row, int col, string objective, List<(int, int)> dataList)
+        public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, List<(int, int)> dataList)
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
@@ -253,7 +253,7 @@ namespace IS_Project.AI
 
             traveledList.AddRange(fastestPath.dataList);
 
-            List<(int, int)> secondFastestPath = findPlayerRoute(row, col, objective, traveledList);
+            List<(int, int)> secondFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (secondFastestPath.Count != 0)
             {
                 pathLengthList.Add(secondFastestPath.Count);
@@ -265,7 +265,7 @@ namespace IS_Project.AI
 
             traveledList.AddRange(secondFastestPath);
 
-            List<(int, int)> thirdFastestPath = findPlayerRoute(row, col, objective, traveledList);
+            List<(int, int)> thirdFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (thirdFastestPath.Count != 0)
             {
                 pathLengthList.Add(thirdFastestPath.Count);
@@ -277,18 +277,18 @@ namespace IS_Project.AI
 
 
             //tester
-            //foreach ((int, int) item in fastestPath.dataList)
-            //{
-            //    _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
-            //}
-            //foreach ((int, int) item in secondFastestPath.dataList)
-            //{
-            //    _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
-            //}
-            //foreach ((int, int) item in thirdFastestPath.dataList)
-            //{
-            //    _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
-            //}
+            /*foreach ((int, int) item in fastestPath.dataList)
+            {
+                _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
+            }
+            foreach ((int, int) item in secondFastestPath.dataList)
+            {
+                _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
+            }
+            foreach ((int, int) item in thirdFastestPath.dataList)
+            {
+                _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
+            }*/
 
             return pathLengthList;
         }
@@ -781,7 +781,7 @@ namespace IS_Project.AI
 
             traveledList.AddRange(fastestPath.dataList);
 
-            List<(int, int)> secondFastestPath = findPlayerRoute(row, col, objective, traveledList);
+            List<(int, int)> secondFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (secondFastestPath.Count != 0)
             {
                 pathLengthList.Add(secondFastestPath.Count);
@@ -793,7 +793,7 @@ namespace IS_Project.AI
 
             traveledList.AddRange(secondFastestPath);
 
-            List<(int, int)> thirdFastestPath = findPlayerRoute(row, col, objective, traveledList);
+            List<(int, int)> thirdFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (thirdFastestPath.Count != 0)
             {
                 pathLengthList.Add(thirdFastestPath.Count);

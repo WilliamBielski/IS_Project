@@ -108,11 +108,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\popco\\OneDrive\\Documents\\IS-Project\\Project_File\\IS_Project\\IS_Project.csproj",
+      "projectUniqueName": "C:\\Users\\popco\\OneDrive\\Documents\\IS_Project\\Project_File\\IS_Project\\IS_Project.csproj",
       "projectName": "IS_Project",
-      "projectPath": "C:\\Users\\popco\\OneDrive\\Documents\\IS-Project\\Project_File\\IS_Project\\IS_Project.csproj",
+      "projectPath": "C:\\Users\\popco\\OneDrive\\Documents\\IS_Project\\Project_File\\IS_Project\\IS_Project.csproj",
       "packagesPath": "C:\\Users\\popco\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\popco\\OneDrive\\Documents\\IS-Project\\Project_File\\IS_Project\\obj\\",
+      "outputPath": "C:\\Users\\popco\\OneDrive\\Documents\\IS_Project\\Project_File\\IS_Project\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

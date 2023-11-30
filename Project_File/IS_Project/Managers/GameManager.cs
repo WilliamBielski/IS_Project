@@ -24,10 +24,13 @@ namespace IS_Project.Managers
 
         public void Update()
         {
-            _gameBoard.Update();
             if (!_gameBoard.isRedTurn)
             {
                 _turnBasedAI.Update();
+            }
+            else
+            {
+                _gameBoard.Update();
             }
         }
         public void Draw()

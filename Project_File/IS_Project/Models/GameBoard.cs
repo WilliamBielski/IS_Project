@@ -213,6 +213,7 @@ namespace IS_Project.Models
                         minotuarPos[1] = mPosY;
                         gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
                         isBlackActive = true;
+                        availableMoves--;
                     }
                 }
 
@@ -267,7 +268,7 @@ namespace IS_Project.Models
                 }
 
                 //click movement for player pieces
-                else if (selectedPiece != "" && mPosX < 30)
+                else if (selectedPiece != "" && mPosX < 30 && mPosX >= 0 && mPosY < 30 && mPosY >= 0)
                 {
                     movePieceByClick(mPosX, mPosY);
                 }
@@ -279,30 +280,30 @@ namespace IS_Project.Models
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    applyMove("up");
+                    movePieceByKey("up");
                     heldKey = 1;
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 {
-                    applyMove("down");
+                    movePieceByKey("down");
                     heldKey = 2;
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    applyMove("left");
+                    movePieceByKey("left");
                     heldKey = 3;
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    applyMove("right");
+                    movePieceByKey("right");
                     heldKey = 4;
                 }
 
                 //mino collision conditions
-                if (selectedPiece == "mino" && isBlackActive)
-                {
-                    minoCollisionCheck(minotuarPos[0], minotuarPos[1]);
-                }
+                //if (selectedPiece == "mino" && isBlackActive)
+                //{
+                //    minoCollisionCheck(minotuarPos[0], minotuarPos[1]);
+                //}
             }
 
             //movement for wall (arrow keys)
@@ -519,7 +520,7 @@ namespace IS_Project.Models
         }
 
         //moves player pieces or the Minotaur on black
-        public void applyMove(string direction)
+        public void movePieceByKey(string direction)
         {
 
             int[] curPiece = {-1, -1};
@@ -556,31 +557,27 @@ namespace IS_Project.Models
                         case "up":
                             if (minotuarPos[1] > 0 && passable.Contains(gameBoard[minotuarPos[0], minotuarPos[1] - 1]))
                             {
-                                //was done this way
-                                /*gameBoard[minotuarPos[0], minotuarPos[1] - 1] = "6";
+                                checkPieceWallCollision(minotuarPos[0], minotuarPos[1] - 1, (minotuarPos[0], minotuarPos[1]));
+                                if (minoCollisionCheck(minotuarPos[0], minotuarPos[1] - 1))
+                                {
+                                    break;
+                                }
                                 gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
                                 minotuarPos[1]--;
-                                availableMoves--; */
-                                checkPieceWallCollision(minotuarPos[0], minotuarPos[1] - 1, (minotuarPos[0], minotuarPos[1]));
-                                if (!minoCollisionCheck(minotuarPos[0], minotuarPos[1] - 1))
-                                {
-                                    gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
-                                    minotuarPos[1]--;
-                                    gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
-                                    availableMoves--;
-                                }
+                                gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
+                                availableMoves--;
                             }
                             break;
                         case "down":
                             if (minotuarPos[1] < 29 && passable.Contains(gameBoard[minotuarPos[0], minotuarPos[1] + 1]))
                             {
                                 checkPieceWallCollision(minotuarPos[0], minotuarPos[1] + 1, (minotuarPos[0], minotuarPos[1]));
-                                minotuarPos[1]++;
-                                gameBoard[minotuarPos[0], minotuarPos[1] - 1] = "0";
-                                if (minoCollisionCheck(minotuarPos[0], minotuarPos[1]))
+                                if (minoCollisionCheck(minotuarPos[0], minotuarPos[1] + 1))
                                 {
                                     break;
                                 }
+                                gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
+                                minotuarPos[1]++;
                                 gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
                                 availableMoves--;
                             }
@@ -589,26 +586,26 @@ namespace IS_Project.Models
                             if (minotuarPos[0] > 0 && passable.Contains(gameBoard[minotuarPos[0] - 1, minotuarPos[1]]))
                             {
                                 checkPieceWallCollision(minotuarPos[0] - 1, minotuarPos[1], (minotuarPos[0], minotuarPos[1]));
-                                minotuarPos[0]--;
-                                gameBoard[minotuarPos[0] + 1, minotuarPos[1]] = "0";
-                                if (minoCollisionCheck(minotuarPos[0], minotuarPos[1]))
+                                if (minoCollisionCheck(minotuarPos[0] - 1, minotuarPos[1]))
                                 {
                                     break;
                                 }
+                                gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
+                                minotuarPos[0]--;
                                 gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
                                 availableMoves--;
                             }
                             break;
                         case "right":
-                            if (minotuarPos[0] < 29 && passable.Contains(gameBoard[minotuarPos[0] - 1, minotuarPos[1]]))
+                            if (minotuarPos[0] < 29 && passable.Contains(gameBoard[minotuarPos[0] + 1, minotuarPos[1]]))
                             {
                                 checkPieceWallCollision(minotuarPos[0] + 1, minotuarPos[1], (minotuarPos[0], minotuarPos[1]));
-                                minotuarPos[0]++;
-                                gameBoard[minotuarPos[0] - 1, minotuarPos[1]] = "0";
-                                if (!minoCollisionCheck(minotuarPos[0] - 1, minotuarPos[1]))
+                                if (minoCollisionCheck(minotuarPos[0] + 1, minotuarPos[1]))
                                 {
                                     break;
                                 }
+                                gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
+                                minotuarPos[0]++;
                                 gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
                                 availableMoves--;
                             }
@@ -622,18 +619,6 @@ namespace IS_Project.Models
                 switch (direction)
                 {
                     case "up":
-                        //used to do it this way
-                        /*if (gameBoard[curPiece[0] + 1, curPiece[1]] == "5R" && gameBoard[curPiece[0], curPiece[1]] == "4")
-                        {
-                            gameBoard[curPiece[0], curPiece[1]] = "0";
-                        }
-                        else if (gameBoard[curPiece[0] + 1, curPiece[1]] == "0")
-                        {
-                            gameBoard[curPiece[0] + 1, curPiece[1]] = "4";
-                            gameBoard[curPiece[0], curPiece[1]] = "0";
-                        }
-                        */
-
                         if (curPiece[1] > 0 && !impassableList.Contains(gameBoard[curPiece[0], curPiece[1] - 1]))
                         {
                             if (gameBoard[curPiece[0], curPiece[1]].Contains("4") && availableMoves > 0)
@@ -750,7 +735,7 @@ namespace IS_Project.Models
         //player piece will be moved to that location
         public void movePieceByClick(int xDest, int yDest)
         {
-            if (gameBoard[xDest, yDest] == "0" || (selectedPiece == "mino" && passable.Contains(gameBoard[xDest, yDest])) || gameBoard[xDest, yDest].Contains('7'))
+            if (gameBoard[xDest, yDest] == "0" || (selectedPiece == "mino" && gameBoard[xDest, yDest].Contains('4')) || gameBoard[xDest, yDest].Contains('7'))
             {
                 BoardSearch ppbfs = new BoardSearch(this);
                 int[] curPiece = { -1, -1 };
@@ -782,20 +767,6 @@ namespace IS_Project.Models
 
                     case "mino":
                         curPiece = minotuarPos;
-                        /*int movesNeeded = ppbfs.getBfsToCoord(minotuarPos[0], minotuarPos[1], (xDest, yDest), availableMoves).Count;
-                        if (movesNeeded > 0 && movesNeeded <= availableMoves)
-                        {
-                            availableMoves -= movesNeeded;
-                            gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
-                            checkPieceWallCollision(xDest, xDest, (minotuarPos[0], minotuarPos[1]));
-                            minotuarPos[0] = xDest;
-                            minotuarPos[1] = yDest;
-                            if (!minoCollisionCheck())
-                            {
-                                gameBoard[minotuarPos[0], minotuarPos[1]] = "6";
-                            }
-                            
-                        }*/
                         break;
                 }
 
@@ -828,12 +799,12 @@ namespace IS_Project.Models
                             gameBoard[curPiece[0], curPiece[1]] = "0";
                             gameBoard[xDest, yDest] = "6";
                         }
-                        curPiece[0] = xDest;
-                        curPiece[1] = yDest;
+                        
                     }
                     else if(selectedPiece == "mino")
                     {
                         minoCollisionCheck(xDest, yDest);
+                        return;
                     }
                     else
                     {
@@ -846,9 +817,9 @@ namespace IS_Project.Models
                         {
                             availableMoves = 0;
                         }
-                        curPiece[0] = xDest;
-                        curPiece[1] = yDest;
                     }
+                    curPiece[0] = xDest;
+                    curPiece[1] = yDest;
                 }
             }
         }
@@ -1100,9 +1071,7 @@ namespace IS_Project.Models
 
             //if the wall was moved...
             //and blue pieces can reach the center...
-            if (originalPos != selectedWall && ppBFS.BFS(bluePiece1[0], bluePiece1[1], "7B").dataList.Count != 0 &&
-                                               ppBFS.BFS(bluePiece2[0], bluePiece2[1], "7B").dataList.Count != 0 &&
-                                               ppBFS.BFS(bluePiece3[0], bluePiece3[1], "7B").dataList.Count != 0)
+            if (originalPos != selectedWall && !ppBFS.isOpponentTrapped(this, false))
             {
                 //if wall was added
                 if (originalPos[0, 0] > 30)
@@ -1127,9 +1096,7 @@ namespace IS_Project.Models
                     availableChokepointList.Remove(((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1])));
                 }
             }
-            else if (!(ppBFS.BFS(bluePiece1[0], bluePiece1[1], "7B").dataList.Count != 0 &&
-                       ppBFS.BFS(bluePiece2[0], bluePiece2[1], "7B").dataList.Count != 0 &&
-                       ppBFS.BFS(bluePiece3[0], bluePiece3[1], "7B").dataList.Count != 0))
+            else if (!ppBFS.isOpponentTrapped(this, false))
             {
                 gameBoard[selectedWall[0, 0], selectedWall[0, 1]] = "0";
                 gameBoard[selectedWall[1, 0], selectedWall[1, 1]] = "0";
@@ -1157,6 +1124,7 @@ namespace IS_Project.Models
         }
         public void checkPieceWallCollision(int xPos, int yPos, (int, int) prevPos)
         {
+            //if a piece moves out of a chokepoint
             if (nwChokepointList.Contains(prevPos))
             {
                 availableChokepointList.Add((prevPos, seChokepointList[nwChokepointList.IndexOf(prevPos)]));
@@ -1166,65 +1134,65 @@ namespace IS_Project.Models
                 availableChokepointList.Add((prevPos, nwChokepointList[seChokepointList.IndexOf(prevPos)]));
             }
 
-            if (nwChokepointList.Contains((xPos, yPos)))
+            //if the new position is in a chokepoint
+            if (xPos != -1)
             {
-                availableChokepointList.Remove(((xPos, yPos), seChokepointList[nwChokepointList.IndexOf((xPos, yPos))]));
-            }
-            else if (seChokepointList.Contains((xPos, yPos)))
-            {
-                availableChokepointList.Remove(((xPos, yPos), nwChokepointList[seChokepointList.IndexOf((xPos, yPos))]));
+                if (nwChokepointList.Contains((xPos, yPos)))
+                {
+                    availableChokepointList.Remove(((xPos, yPos), seChokepointList[nwChokepointList.IndexOf((xPos, yPos))]));
+                }
+                else if (seChokepointList.Contains((xPos, yPos)))
+                {
+                    availableChokepointList.Remove(((xPos, yPos), nwChokepointList[seChokepointList.IndexOf((xPos, yPos))]));
+                }
             }
         }
         //return true if mino hits a player piece false otherwise
         public bool minoCollisionCheck(int xDest, int yDest)
         {
-            if (gameBoard[minotuarPos[0], minotuarPos[1]] == "4R" || gameBoard[minotuarPos[0], minotuarPos[1]] == "4B")
+            if (gameBoard[xDest, yDest].Contains('4'))
             {
-                //was done like this
-                /*else if ((minotuarPos[0], minotuarPos[1]) == (bluePiece3[0], bluePiece3[1]))
+                if (gameBoard[xDest, yDest] == "4R") 
                 {
-                    bluePiece3[0] = 28;
-                    bluePiece3[1] = 29;
-                    minotuarPos[0] = 14.5;
-                    minotuarPos[1] = 14.5;
-                    isBlackActive = false;
-                }*/
-                if ((minotuarPos[0], minotuarPos[1]) == (redPiece1[0], redPiece1[1]))
-                {
-                    redPiece1[0] = 1;
-                    redPiece1[1] = 0;
-                }
-                else if ((minotuarPos[0], minotuarPos[1]) == (redPiece2[0], redPiece2[1]))
-                {
-                    redPiece2[0] = 0;
-                    redPiece2[1] = 0;
+                    if ((xDest, yDest) == (redPiece1[0], redPiece1[1]))
+                    {
+                        redPiece1[0] = 1;
+                        redPiece1[1] = 0;
+                    }
+                    else if ((xDest, yDest) == (redPiece2[0], redPiece2[1]))
+                    {
+                        redPiece2[0] = 0;
+                        redPiece2[1] = 0;
 
+                    }
+                    else if ((xDest, yDest) == (redPiece3[0], redPiece3[1]))
+                    {
+                        redPiece3[0] = 0;
+                        redPiece3[1] = 1;
+                    }
                 }
-                else if ((minotuarPos[0], minotuarPos[1]) == (redPiece3[0], redPiece3[1]))
+                else
                 {
-                    redPiece3[0] = 0;
-                    redPiece3[1] = 1;
+                    if ((xDest, yDest) == (bluePiece1[0], bluePiece1[1]))
+                    {
+                        bluePiece1[0] = 29;
+                        bluePiece1[1] = 28;
+                    }
+                    else if ((xDest, yDest) == (bluePiece2[0], bluePiece2[1]))
+                    {
+                        bluePiece2[0] = 29;
+                        bluePiece2[1] = 29;
+                    }
+                    else if ((xDest, yDest) == (bluePiece3[0], bluePiece3[1]))
+                    {
+                        bluePiece3[0] = 28;
+                        bluePiece3[1] = 29;
+                    }
                 }
-                else if ((minotuarPos[0], minotuarPos[1]) == (bluePiece1[0], bluePiece1[1]))
-                {
-                    bluePiece1[0] = 29;
-                    bluePiece1[1] = 28;
-                }
-                else if ((minotuarPos[0], minotuarPos[1]) == (bluePiece2[0], bluePiece2[1]))
-                {
-                    bluePiece2[0] = 29;
-                    bluePiece2[1] = 29;
-                }
-                else if ((minotuarPos[0], minotuarPos[1]) == (bluePiece3[0], bluePiece3[1]))
-                {
-                    bluePiece3[0] = 28;
-                    bluePiece3[1] = 29;
-                }
-                checkPieceWallCollision(14, 14, (minotuarPos[0], minotuarPos[0]));
+                checkPieceWallCollision(-1, -1, (minotuarPos[0], minotuarPos[0]));
                 gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
                 availableMoves = 0;
-                minotuarPos[0] = -5;
-                minotuarPos[1] = -5;
+                minotuarPos = new int[] { -5, -5};
                 isBlackActive = false;
                 return true;
             }
