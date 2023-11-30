@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/galleryFont.spritefont</SourceFile>
+  <SourceTime>2023-09-06T16:49:22.338537-04:00</SourceTime>
+  <DestFile>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/bin/DesktopGL/Content/galleryFont.xnb</DestFile>
+  <DestTime>2023-09-06T16:54:47.793488-04:00</DestTime>
+  <Importer>FontDescriptionImporter</Importer>
+  <ImporterTime>2022-07-26T07:44:56-04:00</ImporterTime>
+  <Processor>FontDescriptionProcessor</Processor>
+  <ProcessorTime>2022-07-26T07:44:56-04:00</ProcessorTime>
+  <Parameters>
+    <Key>PremultiplyAlpha</Key>
+    <Value>True</Value>
+  </Parameters>
+  <Parameters>
+    <Key>TextureFormat</Key>
+    <Value>Compressed</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

@@ -1,2 +1,1 @@
-# IS_Project
-Minotaurus
+# Minotuarous
