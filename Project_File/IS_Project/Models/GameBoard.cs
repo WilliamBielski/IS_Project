@@ -23,7 +23,7 @@ namespace IS_Project.Models
         int heldKey = 0;
 
         public int[] redPiece1 = { 1, 0 };
-        public int[] redPiece2 = { 0, 0 };
+        public int[] redPiece2 = { 2, 2 };
         public int[] redPiece3 = { 0, 1 };
 
         public int[] bluePiece1 = { 29, 28 };
@@ -36,7 +36,7 @@ namespace IS_Project.Models
 
         public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
                                         { "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"},
-                                        { "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
+                                        { "0", "0", "4R", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "3W", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "3W", "0", "0"},
                                         { "0", "0", "3E", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
                                         { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -66,36 +66,91 @@ namespace IS_Project.Models
                                         { "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "5B", "5B"}
                                     };
 
-        public List<((int, int), (int, int))> availableChokepointList = new List<((int, int), (int, int))>()
+        public Dictionary<((int, int), (int, int)), ((int, int), (int, int))> availableChokepointList = new Dictionary<((int, int), (int, int)), ((int, int), (int, int))>()
         {
-            ((14, 2),(15, 2)),
-            ((0, 5),(1, 5)), ((4, 5),(5,5)), ((9, 5),(10, 5)), ((14, 5),(15, 5)), ((19, 5),(20, 5)), ((24, 5),(25, 5)), ((28, 5),(29, 5)),
-            ((6, 6),(6, 7)), ((11, 6),(11, 7)), ((13, 6),(13, 7)), ((16, 6),(16, 7)), ((18, 6),(18, 7)), ((23, 6),(23, 7)),
-            ((0, 7),(1, 7)), ((28, 7),(29, 7)),
-            ((14, 8),(15, 8)),
-            ((2, 8),(2, 9)), ((27, 8),(27, 9)),
-            ((0, 10),(1, 10)), ((28, 10),(29, 10)),
-            ((12, 11),(13, 11)), ((16, 11),(17, 11)),
-            ((11, 12),(11, 13)), ((18, 12),(18, 13)),
-            ((0, 13),(1, 13)), ((28, 13),(29, 13)),
-            ((2, 14),(2, 15)), ((6, 14),(6, 15)), ((8, 14),(8, 15)), ((21, 14),(21, 15)), ((23, 14),(23, 15)), ((27, 14),(27, 15)),
-            ((0, 16),(1, 16)), ((28, 16),(29, 16)),
-            ((11, 16),(11, 17)), ((18, 16),(18, 17)),
-            ((12, 18),(13, 18)), ((16, 18),(17, 18)),
-            ((0, 19),(1, 19)), ((28, 19),(29, 19)),
-            ((2, 20),(2, 21)), ((27, 20),(27, 21)),
-            ((14, 21),(15, 21)),
-            ((0, 22),(1, 22)), ((28, 22),(29, 22)),
-            ((6, 22),(6, 23)), ((11, 22),(11, 23)), ((13, 22),(13, 23)), ((16, 22),(16, 23)), ((18, 22),(18, 23)), ((23, 22) , (23, 23)),
-            ((0, 24),(1, 24)), ((4, 24),(5,24)), ((9, 24),(10, 24)), ((14, 24),(15, 24)), ((19, 24),(20, 24)), ((24, 24),(25, 24)), ((28, 24),(29, 24))
+            { ((7, 0), (7, 1)), ((7, 0), (7, 1)) },
+            { ((11, 0), (11, 1)), ((11, 0), (11, 1)) },
+            { ((13, 0), (13, 1)), ((13, 0), (13, 1)) },
+            { ((16, 0), (16, 1)), ((16, 0), (16, 1)) },
+            { ((18, 0), (18, 1)), ((18, 0), (18, 1)) },
+            { ((22, 0), (22, 1)), ((22, 0), (22, 1)) },
+            { ((14, 2), (15, 2)), ((14, 2), (15, 2)) },
+            { ((0, 5), (1, 5)), ((0, 5), (1, 5)) },
+            { ((4, 5), (5, 5)), ((4, 5), (5, 5)) },
+            { ((9, 5), (10, 5)), ((9, 5), (10, 5)) },
+            { ((14, 5), (15, 5)), ((14, 5), (15, 5)) },
+            { ((19, 5), (20, 5)), ((19, 5), (20, 5)) },
+            { ((24, 5), (25, 5)), ((24, 5), (25, 5)) },
+            { ((28, 5), (29, 5)), ((28, 5), (29, 5)) },
+            { ((6, 6), (6, 7)), ((6, 6), (6, 7)) },
+            { ((11, 6), (11, 7)), ((11, 6), (11, 7)) },
+            { ((13, 6), (13, 7)), ((13, 6), (13, 7)) },
+            { ((16, 6), (16, 7)), ((16, 6), (16, 7)) },
+            { ((18, 6), (18, 7)), ((18, 6), (18, 7)) },
+            { ((23, 6), (23, 7)), ((23, 6), (23, 7)) },
+            { ((0, 7), (1, 7)), ((0, 7), (1, 7)) },
+            { ((28, 7), (29, 7)), ((28, 7), (29, 7)) },
+            { ((14, 8), (15, 8)), ((14, 8), (15, 8)) },
+            { ((2, 8), (2, 9)), ((2, 8), (2, 9)) },
+            { ((27, 8), (27, 9)), ((27, 8), (27, 9)) },
+            { ((0, 10), (1, 10)), ((0, 10), (1, 10)) },
+            { ((28, 10), (29, 10)), ((28, 10), (29, 10)) },
+            { ((12, 11), (13, 11)), ((12, 11), (13, 11)) },
+            { ((16, 11), (17, 11)), ((16, 11), (17, 11)) },
+            { ((11, 12), (11, 13)), ((11, 12), (11, 13)) },
+            { ((18, 12), (18, 13)), ((18, 12), (18, 13)) },
+            { ((0, 13), (1, 13)), ((0, 13), (1, 13)) },
+            { ((28, 13), (29, 13)), ((28, 13), (29, 13)) },
+            { ((2, 14), (2, 15)), ((2, 14), (2, 15)) },
+            { ((6, 14), (6, 15)), ((6, 14), (6, 15)) },
+            { ((8, 14), (8, 15)), ((8, 14), (8, 15)) },
+            { ((21, 14), (21, 15)), ((21, 14), (21, 15)) },
+            { ((23, 14), (23, 15)), ((23, 14), (23, 15)) },
+            { ((27, 14), (27, 15)), ((27, 14), (27, 15)) },
+            { ((0, 16), (1, 16)), ((0, 16), (1, 16)) },
+            { ((28, 16), (29, 16)), ((28, 16), (29, 16)) },
+            { ((11, 16), (11, 17)), ((11, 16), (11, 17)) },
+            { ((18, 16), (18, 17)), ((18, 16), (18, 17)) },
+            { ((12, 18), (13, 18)), ((12, 18), (13, 18)) },
+            { ((16, 18), (17, 18)), ((16, 18), (17, 18)) },
+            { ((0, 19), (1, 19)), ((0, 19), (1, 19)) },
+            { ((28, 19), (29, 19)), ((28, 19), (29, 19)) },
+            { ((2, 20), (2, 21)), ((2, 20), (2, 21)) },
+            { ((27, 20), (27, 21)), ((27, 20), (27, 21)) },
+            { ((14, 21), (15, 21)), ((14, 21), (15, 21)) },
+            { ((0, 22), (1, 22)), ((0, 22), (1, 22)) },
+            { ((28, 22), (29, 22)), ((28, 22), (29, 22)) },
+            { ((6, 22), (6, 23)), ((6, 22), (6, 23)) },
+            { ((11, 22), (11, 23)), ((11, 22), (11, 23)) },
+            { ((13, 22), (13, 23)), ((13, 22), (13, 23)) },
+            { ((16, 22), (16, 23)), ((16, 22), (16, 23)) },
+            { ((18, 22), (18, 23)), ((18, 22), (18, 23)) },
+            { ((23, 22), (23, 23)), ((23, 22), (23, 23)) },
+            { ((0, 24), (1, 24)), ((0, 24), (1, 24)) },
+            { ((4, 24), (5, 24)), ((4, 24), (5, 24)) },
+            { ((9, 24), (10, 24)), ((9, 24), (10, 24)) },
+            { ((14, 24), (15, 24)), ((14, 24), (15, 24)) },
+            { ((19, 24), (20, 24)), ((19, 24), (20, 24)) },
+            { ((24, 24), (25, 24)), ((24, 24), (25, 24)) },
+            { ((28, 24), (29, 24)), ((28, 24), (29, 24)) },
+            { ((7, 28), (7, 29)), ((7, 28), (7, 29)) },
+            { ((11, 28), (11, 29)), ((11, 28), (11, 29)) },
+            { ((13, 28), (13, 29)), ((13, 28), (13, 29)) },
+            { ((16, 28), (16, 29)), ((16, 28), (16, 29)) },
+            { ((18, 28), (18, 29)), ((18, 28), (18, 29)) },
+            { ((22, 28), (22, 29)), ((22, 28), (22, 29)) },
         };
 
-        public List<((int, int), (int, int))> wallPositionList = new List<((int, int), (int, int))>()
+        public Dictionary<((int, int), (int, int)), ((int, int), (int, int))> wallPositionList = new Dictionary<((int, int), (int, int)), ((int, int), (int, int))>()
         {
-            ((3, 2),(4, 2)), ((25, 2),(26, 2)),
-            ((8, 8),(8, 9)), ((21, 8),(21, 9)),
-            ((8, 20),(8, 21)), ((21, 20),(21, 21)),
-            ((3, 27),(4, 27)), ((25, 27),(26, 27)),
+            { ((3, 2), (4, 2)), ((3, 2), (4, 2)) },
+            { ((25, 2), (26, 2)), ((25, 2), (26, 2)) },
+            { ((8, 8), (8, 9)), ((8, 8), (8, 9)) },
+            { ((21, 8), (21, 9)), ((21, 8), (21, 9)) },
+            { ((8, 20), (8, 21)), ((8, 20), (8, 21)) },
+            { ((21, 20), (21, 21)), ((21, 20), (21, 21)) },
+            { ((3, 27), (4, 27)), ((3, 27), (4, 27)) },
+            { ((25, 27), (26, 27)), ((25, 27), (26, 27)) },
         };
 
         public string[] impassableList = { "1", "3N", "3S", "3E", "3W", "T" };
@@ -134,7 +189,7 @@ namespace IS_Project.Models
         public GameBoard() { }
         //copy constructor
         public GameBoard(bool dr, List<int[]> pieceList, int[] minoPos, int[,] selWall, string[,] board,
-                         List<((int, int), (int, int))> cpList, List<((int, int), (int, int))> wallPosList,
+                         Dictionary<((int, int), (int, int)), ((int, int), (int, int))> cpList, Dictionary<((int, int), (int, int)), ((int, int), (int, int))> wallPosList,
                          bool redTurn, bool vicR, bool vicB, bool isGrey, bool blackActive, string selPiece, int moves)
         {
             this.diceRolled = dr;
@@ -839,7 +894,7 @@ namespace IS_Project.Models
         //direction of the arrow keys. If not possible, it will do nothing
         public void moveWallByKey(string direction)
         {
-            int[,] originalPos = { { selectedWall[0, 0], selectedWall[0, 1] }, { selectedWall[1, 0], selectedWall[1, 1] } };
+            ((int, int), (int, int)) originalPos = ((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1]));
 
             switch (direction)
             {
@@ -905,7 +960,7 @@ namespace IS_Project.Models
         //If still not possible, it will do nothing
         public void moveWallByClick(int xDest, int yDest)
         {
-            int[,] originalPos = { { selectedWall[0, 0], selectedWall[0, 1] }, { selectedWall[1, 0], selectedWall[1, 1] } };
+            ((int, int), (int, int)) originalPos = ( ( selectedWall[0, 0], selectedWall[0, 1] ), ( selectedWall[1, 0], selectedWall[1, 1] ) );
             //if statements for collision:
 
             //if wall is currently NS
@@ -984,7 +1039,7 @@ namespace IS_Project.Models
         //rotates a wall
         public void rotateWall()
         {
-            int[,] originalPos = { { selectedWall[0, 0], selectedWall[0, 1] }, { selectedWall[1, 0], selectedWall[1, 1] } };
+            ((int, int),(int, int)) originalPos = ( ( selectedWall[0, 0], selectedWall[0, 1] ), ( selectedWall[1, 0], selectedWall[1, 1] ) );
             if (selectedWall[0, 0] != -2)
             {
                 //if the wall is verical
@@ -1035,85 +1090,86 @@ namespace IS_Project.Models
             checkWallPosition(originalPos);
         }
         //updates wallPositionList when a human does Grey
-        public void checkWallPosition(int[,] originalPos)
+        public void checkWallPosition(((int, int), (int, int)) originalPos)
         {
             BoardSearch ppBFS = new BoardSearch(this);
 
             //if the wall was moved...
             //and blue pieces can reach the center...
-            if (originalPos != selectedWall && !ppBFS.isOpponentTrapped(this, false))
+            ((int, int), (int, int)) selWallToTup = ((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1]));
+            if (originalPos != ((selectedWall[0,0], selectedWall[0,1]), (selectedWall[1,0], selectedWall[1,1])) && !ppBFS.isOpponentTrapped(this, false))
             {
                 //if wall was added
-                if (originalPos[0, 0] > 30)
+                if (originalPos.Item1.Item1 > 30)
                 {
-                    wallPositionList.Add(((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1])));
+                    wallPositionList.Add(selWallToTup, selWallToTup);
                 }
                 //if the wall was moved
                 else
                 {
-                    wallPositionList.Remove(((originalPos[0, 0], originalPos[0, 1]), (originalPos[1, 0], originalPos[1, 1])));
-                    wallPositionList.Add(((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1])));
+                    wallPositionList.Remove(originalPos);
+                    wallPositionList.Add(originalPos, originalPos);
                 }
 
                 //if the wall was in a chokepoint but is now moved
-                if (baseChokepointList.Contains(((originalPos[0, 0], originalPos[0, 1]), (originalPos[1, 0], originalPos[1, 1]))))
+                if (baseChokepointList.ContainsKey(originalPos))
                 {
-                    availableChokepointList.Add(((originalPos[0, 0], originalPos[0, 1]), (originalPos[1, 0], originalPos[1, 1])));
+                    availableChokepointList.Add(originalPos, originalPos);
                 }
 
-                if (availableChokepointList.Contains(((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1]))))
+                if (availableChokepointList.ContainsKey(selWallToTup))
                 {
-                    availableChokepointList.Remove(((selectedWall[0, 0], selectedWall[0, 1]), (selectedWall[1, 0], selectedWall[1, 1])));
+                    availableChokepointList.Remove(selWallToTup);
                 }
             }
             else if (!ppBFS.isOpponentTrapped(this, false))
             {
                 gameBoard[selectedWall[0, 0], selectedWall[0, 1]] = "0";
                 gameBoard[selectedWall[1, 0], selectedWall[1, 1]] = "0";
-                if (originalPos[0, 0] > 30)
+                if (originalPos.Item1.Item1 > 30)
                 {
-                    selectedWall[0, 0] = originalPos[0, 0];
+                    selectedWall[0, 0] = originalPos.Item1.Item1;
                 }
                 //if wall was NS
-                else if (originalPos[0, 0] == originalPos[1, 0])
+                else if (originalPos.Item1.Item1 == originalPos.Item2.Item1)
                 {
-                    gameBoard[originalPos[0, 0], originalPos[0, 1]] = "3N";
-                    gameBoard[originalPos[1, 0], originalPos[1, 1]] = "3S";
+                    gameBoard[originalPos.Item1.Item1, originalPos.Item1.Item2] = "3N";
+                    gameBoard[originalPos.Item2.Item1, originalPos.Item2.Item2] = "3S";
                 }
                 //if wall was WE
                 else if (selectedWall[0, 1] == selectedWall[1, 1] || addWallActive)
                 {
-                    gameBoard[originalPos[0, 0], originalPos[0, 1]] = "3W";
-                    gameBoard[originalPos[1, 0], originalPos[1, 1]] = "3E";
+                    gameBoard[originalPos.Item1.Item1, originalPos.Item1.Item2] = "3W";
+                    gameBoard[originalPos.Item2.Item1, originalPos.Item2.Item2] = "3E";
                 }
-                selectedWall[0, 0] = originalPos[0, 0];
-                selectedWall[0, 1] = originalPos[0, 1];
-                selectedWall[1, 0] = originalPos[1, 0];
-                selectedWall[1, 1] = originalPos[1, 1];
+                selectedWall[0, 0] = originalPos.Item1.Item1;
+                selectedWall[0, 1] = originalPos.Item1.Item2;
+                selectedWall[1, 0] = originalPos.Item2.Item1;
+                selectedWall[1, 1] = originalPos.Item2.Item2;
             }
         }
         public void checkPieceWallCollision(int xPos, int yPos, (int, int) prevPos)
         {
             //if a piece moves out of a chokepoint
-            if (nwChokepointList.Contains(prevPos))
+            if (nwChokepointList.ContainsKey(prevPos))
             {
-                availableChokepointList.Add((prevPos, seChokepointList[nwChokepointList.IndexOf(prevPos)]));
+                availableChokepointList.Add(nwChokepointList[prevPos], nwChokepointList[prevPos]);
             }
-            else if (seChokepointList.Contains(prevPos))
+            else if (seChokepointList.ContainsKey(prevPos))
             {
-                availableChokepointList.Add((prevPos, nwChokepointList[seChokepointList.IndexOf(prevPos)]));
+                availableChokepointList.Add(seChokepointList[prevPos], seChokepointList[prevPos]);
             }
 
             //if the new position is in a chokepoint
             if (xPos != -1)
             {
-                if (nwChokepointList.Contains((xPos, yPos)))
+                if (nwChokepointList.ContainsKey((xPos, yPos)))
                 {
-                    availableChokepointList.Remove(((xPos, yPos), seChokepointList[nwChokepointList.IndexOf((xPos, yPos))]));
+                    availableChokepointList.Remove(nwChokepointList[(xPos, yPos)]);
                 }
-                else if (seChokepointList.Contains((xPos, yPos)))
+                else if (nwChokepointList.ContainsKey((xPos, yPos)))
                 {
-                    availableChokepointList.Remove(((xPos, yPos), nwChokepointList[seChokepointList.IndexOf((xPos, yPos))]));
+                    availableChokepointList.Remove(seChokepointList[(xPos, yPos)]);
                 }
             }
         }
@@ -1161,8 +1217,9 @@ namespace IS_Project.Models
                 }
                 checkPieceWallCollision(-1, -1, (minotuarPos[0], minotuarPos[0]));
                 gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
+                gameBoard[xDest, yDest] = "0";
                 availableMoves = 0;
-                minotuarPos = new int[] { -5, -5};
+                minotuarPos = new int[] { -5, -5 };
                 isBlackActive = false;
                 return true;
             }
@@ -1204,15 +1261,15 @@ namespace IS_Project.Models
                     newGameBoard[i,j] = gameBoard[i,j].ToString();
                 }
             }
-            List<((int, int), (int, int))> newCPList = new List<((int, int), (int, int))>();
-            foreach(((int, int), (int, int)) chokepoint in availableChokepointList)
+            Dictionary<((int, int), (int, int)), ((int, int), (int, int))> newCPList = new Dictionary<((int, int), (int, int)), ((int, int), (int, int))>();
+            foreach(var chokepoint in availableChokepointList)
             {
-                newCPList.Add(chokepoint);
+                newCPList.Add(chokepoint.Key, chokepoint.Value);
             }
-            List<((int, int), (int, int))> newWallPosList = new List<((int, int), (int, int))>();
-            for (int l = 0; l < wallPositionList.Count; l++)
+            Dictionary<((int, int), (int, int)), ((int, int), (int, int))> newWallPosList = new Dictionary<((int, int), (int, int)), ((int, int), (int, int))>();
+            foreach(var wall in wallPositionList)
             {
-                newWallPosList.Add(wallPositionList[l]);
+                newWallPosList.Add(wall.Key, wall.Value);
             }
             bool irt = isRedTurn;
             bool vicR = redVictory;

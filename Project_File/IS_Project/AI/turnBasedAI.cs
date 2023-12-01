@@ -63,12 +63,12 @@ namespace IS_Project.AI
                 }
 
                 currentGameBoard.availableChokepointList.Remove(greyMove[0]);
-                if (currentGameBoard.baseChokepointList.Contains(greyMove[1]))
+                if (currentGameBoard.baseChokepointList.ContainsKey(greyMove[1]))
                 {
-                    currentGameBoard.availableChokepointList.Add(greyMove[1]);
+                    currentGameBoard.availableChokepointList.Add(greyMove[1], greyMove[1]);
                 }
 
-                currentGameBoard.wallPositionList.Add(greyMove[0]);
+                currentGameBoard.wallPositionList.Add(greyMove[0], greyMove[0]);
                 //PlayerPieceBFS movementPath = new PlayerPieceBFS(currentGameBoard);
                 //List<int> lengths = movementPath.pTester(currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1], "7B");
                 currentGameBoard.endTurn();
@@ -361,22 +361,22 @@ namespace IS_Project.AI
             List<MinMaxNode> minmaxNodeList = new List<MinMaxNode>();
             int baseBoardUtil = getUtility(gameState);
 
-            foreach (((int, int), (int, int)) chokepoint in gameState.availableChokepointList)
+            foreach (var chokepoint in gameState.availableChokepointList)
             {
                 //Add a wall at chokepoint
                 MinMaxNode addWallMove = new MinMaxNode(gameState);
                 BoardSearch ppBFS = new BoardSearch(addWallMove.minmaxGameboard);
                 //for NS
-                if (chokepoint.Item1.Item1 == chokepoint.Item2.Item1)
+                if (chokepoint.Value.Item1.Item1 == chokepoint.Value.Item2.Item1)
                 {
-                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Item1.Item1, chokepoint.Item1.Item2] = "3N";
-                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Item2.Item1, chokepoint.Item2.Item2] = "3S";
+                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item1.Item1, chokepoint.Value.Item1.Item2] = "3N";
+                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item2.Item1, chokepoint.Value.Item2.Item2] = "3S";
                 }
                 //for WE
                 else
                 {
-                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Item1.Item1, chokepoint.Item1.Item2] = "3W";
-                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Item2.Item1, chokepoint.Item2.Item2] = "3E";
+                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item1.Item1, chokepoint.Value.Item1.Item2] = "3W";
+                    addWallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item2.Item1, chokepoint.Value.Item2.Item2] = "3E";
                 }
                 //no-trap rule
                 //if adding a wall to this position would trap a piece, then the same aplies to moving a wall this position
@@ -387,9 +387,9 @@ namespace IS_Project.AI
 
                 if (isBlueTurn ? getUtility(addWallMove.minmaxGameboard) > baseBoardUtil : getUtility(addWallMove.minmaxGameboard) < baseBoardUtil)
                 {
-                    addWallMove.minmaxGameboard.availableChokepointList.Remove(chokepoint);
-                    addWallMove.minmaxGameboard.wallPositionList.Add(chokepoint);
-                    addWallMove.currentMove.Add(chokepoint);
+                    addWallMove.minmaxGameboard.availableChokepointList.Remove(chokepoint.Key);
+                    addWallMove.minmaxGameboard.wallPositionList.Add(chokepoint.Key, chokepoint.Value);
+                    addWallMove.currentMove.Add(chokepoint.Value);
                     addWallMove.currentMove.Add(((-2, -2), (-2, -2)));
                     minmaxNodeList.Add(addWallMove);
                 }
@@ -397,36 +397,36 @@ namespace IS_Project.AI
                 //-----------------------------------------------------------------------------------------------//
 
                 //for each wall to be moved to that chokepoint
-                foreach (((int, int), (int, int)) boardWall in gameState.wallPositionList)
+                foreach (var boardWall in gameState.wallPositionList)
                 {
                     MinMaxNode wallMove = new MinMaxNode(gameState);
                     //for NS
-                    if (chokepoint.Item1.Item1 == chokepoint.Item2.Item1)
+                    if (chokepoint.Value.Item1.Item1 == chokepoint.Value.Item2.Item1)
                     {
-                        wallMove.minmaxGameboard.gameBoard[chokepoint.Item1.Item1, chokepoint.Item1.Item2] = "3N";
-                        wallMove.minmaxGameboard.gameBoard[chokepoint.Item2.Item1, chokepoint.Item2.Item2] = "3S";
+                        wallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item1.Item1, chokepoint.Value.Item1.Item2] = "3N";
+                        wallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item2.Item1, chokepoint.Value.Item2.Item2] = "3S";
                     }
                     //for WE
                     else
                     {
-                        wallMove.minmaxGameboard.gameBoard[chokepoint.Item1.Item1, chokepoint.Item1.Item2] = "3W";
-                        wallMove.minmaxGameboard.gameBoard[chokepoint.Item2.Item1, chokepoint.Item2.Item2] = "3E";
+                        wallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item1.Item1, chokepoint.Value.Item1.Item2] = "3W";
+                        wallMove.minmaxGameboard.gameBoard[chokepoint.Value.Item2.Item1, chokepoint.Value.Item2.Item2] = "3E";
                     }
 
-                    wallMove.minmaxGameboard.gameBoard[boardWall.Item1.Item1, boardWall.Item1.Item2] = "0";
-                    wallMove.minmaxGameboard.gameBoard[boardWall.Item2.Item1, boardWall.Item2.Item2] = "0";
+                    wallMove.minmaxGameboard.gameBoard[boardWall.Value.Item1.Item1, boardWall.Value.Item1.Item2] = "0";
+                    wallMove.minmaxGameboard.gameBoard[boardWall.Value.Item2.Item1, boardWall.Value.Item2.Item2] = "0";
 
                     if (isBlueTurn ? getUtility(wallMove.minmaxGameboard) > baseBoardUtil : getUtility(wallMove.minmaxGameboard) < baseBoardUtil)
                     {
-                        wallMove.minmaxGameboard.availableChokepointList.Remove(chokepoint);
+                        wallMove.minmaxGameboard.availableChokepointList.Remove(chokepoint.Key);
                         if (wallMove.minmaxGameboard.baseChokepointList.Contains(boardWall))
                         {
-                            wallMove.minmaxGameboard.availableChokepointList.Add(boardWall);
+                            wallMove.minmaxGameboard.availableChokepointList.Add(boardWall.Key, boardWall.Value);
                         }
-                        wallMove.minmaxGameboard.wallPositionList.Remove(boardWall);
-                        wallMove.minmaxGameboard.wallPositionList.Add(chokepoint);
-                        wallMove.currentMove.Add(chokepoint);
-                        wallMove.currentMove.Add(boardWall);
+                        wallMove.minmaxGameboard.wallPositionList.Remove(boardWall.Key);
+                        wallMove.minmaxGameboard.wallPositionList.Add(chokepoint.Key, chokepoint.Value);
+                        wallMove.currentMove.Add(chokepoint.Value);
+                        wallMove.currentMove.Add(boardWall.Value);
                         minmaxNodeList.Add(wallMove);
                     }
                 }
