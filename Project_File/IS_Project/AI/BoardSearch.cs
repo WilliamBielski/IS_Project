@@ -28,7 +28,7 @@ namespace IS_Project.AI
 
         // Function to check if a cell
         // is be visited or not
-        public bool isValid(int row, int col, List<(int, int)> visited)
+        public bool isValid(int row, int col, Dictionary<(int, int), int> visited)
         {
             // If cell lies out of bounds
             if (row < 0 || col < 0 || row >= rowBound || col >= colBound)
@@ -38,7 +38,7 @@ namespace IS_Project.AI
 
             // If cell is already visited
             //(int, int) pos = ;
-            if (visited.Contains((row, col)))
+            if (visited.ContainsKey((row, col)))
             {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace IS_Project.AI
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
 
             //linked thing for later
             bfsRespose pathList = new bfsRespose();
@@ -62,7 +62,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node((row, col));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
 
 
@@ -109,7 +109,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add((adjX, adjY));
+                        visited.Add((adjX, adjY), currentNode.depth + 1);
 
                     }
                 }
@@ -128,26 +128,26 @@ namespace IS_Project.AI
             }
         }
 
-        public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, List<(int, int)> dataList)
+        public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, Dictionary<(int, int), int> dataList)
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
-            List<(int, int)> offLimitCoords = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int> ();
+            Dictionary<(int, int), int> offLimitCoords = new Dictionary<(int, int), int>();
             List<(int, int)> pathList = new List<(int, int)>();
             Node currentNode;
 
-            foreach ((int, int) coords in dataList)
+            foreach (var coords in dataList)
             {
-                if (nwChokepointList.Contains(coords))
+                if (nwChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
                 {
-                    offLimitCoords.Add(coords);
-                    offLimitCoords.Add(seChokepointList[nwChokepointList.IndexOf(coords)]);
+                    offLimitCoords.Add(coords.Key, 1);
+                    offLimitCoords.Add(nwChokepointList[coords.Key].Item2, 1);
                 }
-                else if (seChokepointList.Contains(coords))
+                else if (seChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
                 {
-                    offLimitCoords.Add(coords);
-                    offLimitCoords.Add(nwChokepointList[seChokepointList.IndexOf(coords)]);
+                    offLimitCoords.Add(coords.Key, 1);
+                    offLimitCoords.Add(seChokepointList[coords.Key].Item1, 1);
                 }
             }
 
@@ -155,7 +155,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node((row, col));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
             currentNode = queue.Dequeue();
 
@@ -176,8 +176,7 @@ namespace IS_Project.AI
 
                         queue.Enqueue(adjNode);
                     }
-                    visited.Add(adjTuple);
-
+                    visited.Add(adjTuple, currentNode.depth + 1);
                 }
             }
 
@@ -215,7 +214,7 @@ namespace IS_Project.AI
                     int adjY = y + dirVectCol[i];
                     (int, int) adjTuple = (adjX, adjY);
 
-                    if (isValid(adjX, adjY, visited) && !offLimitCoords.Contains(adjTuple))
+                    if (isValid(adjX, adjY, visited) && !offLimitCoords.ContainsKey(adjTuple))
                     {
                         if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
                         {
@@ -225,7 +224,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add(adjTuple);
+                        visited.Add(adjTuple, currentNode.depth + 1);
 
                     }
                 }
@@ -233,10 +232,10 @@ namespace IS_Project.AI
             return pathList;
         }
 
-        public List<int> getPathLength(int row, int col, string objective)
+        public List<int> getPathLengths(int row, int col, string objective)
         {
             List<int> pathLengthList = new List<int>();
-            List<(int, int)> traveledList = new List<(int, int)>();
+            Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
 
             //includes destination at this point
             bfsRespose fastestPath = BFS(row, col, objective);
@@ -249,9 +248,13 @@ namespace IS_Project.AI
                 pathLengthList.Add(55);
             }
 
-            //for testing
-
-            traveledList.AddRange(fastestPath.dataList);
+            foreach(var cord in  fastestPath.dataList)
+            {
+                if (!traveledList.ContainsKey(cord))
+                {
+                    traveledList.Add(cord, 0);
+                }
+            }
 
             List<(int, int)> secondFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (secondFastestPath.Count != 0)
@@ -263,7 +266,13 @@ namespace IS_Project.AI
                 pathLengthList.Add(60);
             }
 
-            traveledList.AddRange(secondFastestPath);
+            foreach (var cord in secondFastestPath)
+            {
+                if (!traveledList.ContainsKey(cord))
+                {
+                    traveledList.Add(cord, 0);
+                }
+            }
 
             List<(int, int)> thirdFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (thirdFastestPath.Count != 0)
@@ -321,10 +330,10 @@ namespace IS_Project.AI
             {
                 // Stores indices of the matrix cells
                 Queue<Node> queue = new Queue<Node>();
-                List<(int, int)> visited = new List<(int, int)>();
+                Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
                 Node n = new Node((pieceList[j][0], pieceList[j][1]));
                 queue.Enqueue(n);
-                visited.Add(n.data);
+                visited.Add(n.data, n.depth);
 
                 int remainingMoves = 100;
                 int nodesInQueue = 100;
@@ -382,7 +391,7 @@ namespace IS_Project.AI
                                 adjNode.depth = currentNode.depth + 1;
                                 queue.Enqueue(adjNode);
                             }
-                            visited.Add((adjX, adjY));
+                            visited.Add((adjX, adjY), currentNode.depth + 1);
                         }
                     }
                     if (nodesInQueue > 0)
@@ -411,7 +420,7 @@ namespace IS_Project.AI
 
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
 
             Node currentNode;
 
@@ -419,7 +428,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node((row, col));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
 
 
@@ -460,7 +469,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add((adjX, adjY));
+                        visited.Add((adjX, adjY), currentNode.depth + 1);
 
                     }
                 }
@@ -473,7 +482,7 @@ namespace IS_Project.AI
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
 
             //linked thing for later
             List<(int, int)> pathList = new List<(int, int)>();
@@ -483,7 +492,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node((xPos, yPos));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
 
 
@@ -533,7 +542,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add((adjX, adjY));
+                        visited.Add((adjX, adjY), currentNode.depth + 1);
 
                     }
                 }
@@ -546,7 +555,7 @@ namespace IS_Project.AI
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
 
             Node currentNode;
 
@@ -554,7 +563,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node((row, col));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
 
 
@@ -599,7 +608,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add((adjX, adjY));
+                        visited.Add((adjX, adjY), currentNode.depth + 1);
 
                     }
                 }
@@ -612,7 +621,7 @@ namespace IS_Project.AI
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
-            List<(int, int)> visited = new List<(int, int)>();
+            Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
             int[] pieceList = { 0, 0 };
 
             Node currentNode;
@@ -621,7 +630,7 @@ namespace IS_Project.AI
             // and push it into the queue
             Node n = new Node(((int)_gameBoard.minotuarPos[0], (int)_gameBoard.minotuarPos[1]));
             queue.Enqueue(n);
-            visited.Add(n.data);
+            visited.Add(n.data, n.depth);
 
 
 
@@ -672,7 +681,7 @@ namespace IS_Project.AI
 
                             queue.Enqueue(adjNode);
                         }
-                        visited.Add((adjX, adjY));
+                        visited.Add((adjX, adjY), currentNode.depth + 1);
 
                     }
                 }
@@ -683,7 +692,7 @@ namespace IS_Project.AI
         //determines is an opponent's player pieces can make it to an end zone
         public bool isOpponentTrapped(GameBoard gamestate, bool isBlueTurn)
         {
-            List<(int, int)> clearedPathsList = new List<(int, int)>();
+            Dictionary<(int, int), int> clearedPathsList = new Dictionary<(int, int), int>();
             Node currentNode;
 
             List<int[]> pieceList;
@@ -703,10 +712,10 @@ namespace IS_Project.AI
             {
                 // Stores indices of the matrix cells
                 Queue<Node> queue = new Queue<Node>();
-                List<(int, int)> visited = new List<(int, int)>();
+                Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
                 Node n = new Node((piece[0], piece[1]));
                 queue.Enqueue(n);
-                visited.Add(n.data);
+                visited.Add(n.data, n.depth);
 
 
 
@@ -722,7 +731,7 @@ namespace IS_Project.AI
                     currentNode = queue.Dequeue();
 
                     //if current node == objective or part of a cleared path, add it to clearedPieceList
-                    if (clearedPathsList.Contains((x, y)) || _gameBoard.gameBoard[x, y] == objective)
+                    if (clearedPathsList.ContainsKey((x, y)) || _gameBoard.gameBoard[x, y] == objective)
                     {
                         break;
                     }
@@ -736,7 +745,8 @@ namespace IS_Project.AI
 
                         if (isValid(adjX, adjY, visited))
                         {
-                            if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                            if (_gameBoard.gameBoard[adjX, adjY] == "0" || isBlueTurn ? _gameBoard.gameBoard[adjX, adjY].Contains('B') :
+                                                                                        _gameBoard.gameBoard[adjX, adjY].Contains('R'))
                             {
                                 Node adjNode = new Node((adjX, adjY));
                                 adjNode.next = currentNode;
@@ -744,8 +754,8 @@ namespace IS_Project.AI
 
                                 queue.Enqueue(adjNode);
                             }
-                            visited.Add((adjX, adjY));
-                            clearedPathsList.Add((adjX, adjY));
+                            visited.Add((adjX, adjY), currentNode.depth + 1);
+                            clearedPathsList.Add((adjX, adjY), adjX);
                         }
                     }
 
@@ -764,7 +774,7 @@ namespace IS_Project.AI
         public List<int> pTester(int row, int col, string objective)
         {
             List<int> pathLengthList = new List<int>();
-            List<(int, int)> traveledList = new List<(int, int)>();
+            Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
 
             //includes destination at this point
             bfsRespose fastestPath = BFS(row, col, objective);
@@ -779,7 +789,13 @@ namespace IS_Project.AI
 
             //for testing
 
-            traveledList.AddRange(fastestPath.dataList);
+            foreach (var cord in fastestPath.dataList)
+            {
+                if (!traveledList.ContainsKey(cord))
+                {
+                    traveledList.Add(cord, 0);
+                }
+            }
 
             List<(int, int)> secondFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (secondFastestPath.Count != 0)
@@ -791,7 +807,13 @@ namespace IS_Project.AI
                 pathLengthList.Add(60);
             }
 
-            traveledList.AddRange(secondFastestPath);
+            foreach (var cord in secondFastestPath)
+            {
+                if (!traveledList.ContainsKey(cord))
+                {
+                    traveledList.Add(cord, 0);
+                }
+            }
 
             List<(int, int)> thirdFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
             if (thirdFastestPath.Count != 0)

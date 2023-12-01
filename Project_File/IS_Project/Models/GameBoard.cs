@@ -157,13 +157,17 @@ namespace IS_Project.Models
         public string[] passable = { "0", "4R", "4B" };
         public string[] playerBases = { "5R", "5B", "7R", "7B" };
 
-        public List<(int, int)> redVictoryTiles = new List<(int, int)>()
+        public Dictionary<(int, int), int> redVictoryTiles = new Dictionary<(int, int), int>()
         {
-            (13, 13), (13, 14), (14, 13),
+            { (13, 13), 1 }, 
+            { (13, 14), 2 }, 
+            { (14, 13), 3 },
         };
-        public List<(int, int)> blueVictoryTiles = new List<(int, int)>()
+        public Dictionary<(int, int), int> blueVictoryTiles = new Dictionary<(int, int), int>()
         {
-            ( 15, 16 ), (16,16), (16,15),
+            { ( 15, 16 ), 1 },
+            { (16,16), 2 },
+            { (16,15), 3 },
         };
 
         public bool isRedTurn = true;
@@ -261,7 +265,7 @@ namespace IS_Project.Models
                 }
 
                 //if a wall is selected (implying isGreyActive is true) and the user clicks to move
-                else if (selectedWall[0, 0] != -2 && (mPosX < 30 && gameBoard[mPosX, mPosY].Contains('0')))
+                else if (selectedWall[0, 0] != -2 && gameBoard[mPosX, mPosY] == "0" && (mPosX < 30 && mPosX >= 0 && mPosY < 30 && mPosY >= 0))
                 {
                     moveWallByClick(mPosX, mPosY);
                 }
@@ -402,11 +406,11 @@ namespace IS_Project.Models
             }
 
             //general victory conditions
-            if (redVictoryTiles.Contains((redPiece1[0], redPiece1[0])) && redVictoryTiles.Contains((redPiece2[0], redPiece2[0])) && redVictoryTiles.Contains((redPiece3[0], redPiece3[0])))
+            if (redVictoryTiles.ContainsKey((redPiece1[0], redPiece1[0])) && redVictoryTiles.ContainsKey((redPiece2[0], redPiece2[0])) && redVictoryTiles.ContainsKey((redPiece3[0], redPiece3[0])))
             {
                 redVictory = true;
             }
-            else if (blueVictoryTiles.Contains((bluePiece1[0], bluePiece1[0])) && blueVictoryTiles.Contains((bluePiece2[0], bluePiece2[0])) && blueVictoryTiles.Contains((bluePiece3[0], bluePiece3[0])))
+            else if (blueVictoryTiles.ContainsKey((bluePiece1[0], bluePiece1[0])) && blueVictoryTiles.ContainsKey((bluePiece2[0], bluePiece2[0])) && blueVictoryTiles.ContainsKey((bluePiece3[0], bluePiece3[0])))
             {
                 blueVictory = true;
             }
@@ -512,19 +516,19 @@ namespace IS_Project.Models
             int num = rnd.Next(1, 7);
             switch (num)
             {
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 1:
-                    selectedPiece = "mino";
-                    availableMoves = 8;
-                    break;
-
+                //case 2:
+                //case 3:
+                //case 4:
+                //case 5:
+                //case 6:
                 //case 1:
-                //    availableMoves = 3;
+                //    selectedPiece = "mino";
+                //    availableMoves = 8;
                 //    break;
+
+                case 1:
+                    availableMoves = 3;
+                    break;
 
                 //case 1:
                 //case 3:
@@ -966,7 +970,7 @@ namespace IS_Project.Models
             //if wall is currently NS
             if (selectedWall[0, 0] == selectedWall[1, 0])
             {
-                if (gameBoard[xDest, yDest + 1].Contains('0'))
+                if (gameBoard[xDest, yDest + 1] == "0")
                 {
                     gameBoard[xDest, yDest] = "3N";
                     gameBoard[xDest, yDest + 1] = "3S";
@@ -978,7 +982,7 @@ namespace IS_Project.Models
                     selectedWall[1, 0] = xDest;
                     selectedWall[1, 1] = yDest + 1;
                 }
-                else if (gameBoard[xDest, yDest - 1].Contains('0'))
+                else if (gameBoard[xDest, yDest - 1] == "0")
                 {
                     gameBoard[xDest, yDest - 1] = "3N";
                     gameBoard[xDest, yDest] = "3S";
@@ -994,7 +998,7 @@ namespace IS_Project.Models
             //if wall is currently WE
             else if (selectedWall[0, 1] == selectedWall[1, 1] || addWallActive)
             {
-                if (gameBoard[xDest + 1, yDest].Contains('0'))
+                if (gameBoard[xDest + 1, yDest] == "0")
                 {
                     gameBoard[xDest, yDest] = "3W";
                     gameBoard[xDest + 1, yDest] = "3E";
@@ -1013,7 +1017,7 @@ namespace IS_Project.Models
                     selectedWall[1, 0] = xDest + 1;
                     selectedWall[1, 1] = yDest;
                 }
-                else if (gameBoard[xDest - 1, yDest].Contains('0'))
+                else if (gameBoard[xDest - 1, yDest] == "0")
                 {
                     gameBoard[xDest - 1, yDest] = "3W";
                     gameBoard[xDest, yDest] = "3E";
