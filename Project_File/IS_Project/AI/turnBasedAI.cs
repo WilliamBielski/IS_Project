@@ -102,38 +102,6 @@ namespace IS_Project.AI
                     
                     currentGameBoard.availableMoves = 0;
                     currentGameBoard.endTurn();
-                    //currentGameBoard.availableMoves = getUtility(currentGameBoard);
-                    //List<int> lengths = movementPath.getPathLength(currentGameBoard.bluePiece1[0], currentGameBoard.bluePiece1[1], "7B");
-
-                    //old ways
-                    /*while (currentGameBoard.availableMoves > 0 && minoPath.Count != 0)
-                    {
-                        //for up
-                        if (minoPath.FirstOrDefault().Item2 < currentGameBoard.minotuarPos[1])
-                        {
-                            currentGameBoard.applyMove("up");
-                            minoPath.RemoveFirst();
-                        }
-                        //for down
-                        else if (minoPath.FirstOrDefault().Item2 > currentGameBoard.minotuarPos[1])
-                        {
-                            currentGameBoard.applyMove("down");
-                            minoPath.RemoveFirst();
-                        }
-                        //for left
-                        else if (minoPath.FirstOrDefault().Item1 < currentGameBoard.minotuarPos[0])
-                        {
-                            currentGameBoard.applyMove("left");
-                            minoPath.RemoveFirst();
-                        }
-                        //for right
-                        else if (minoPath.FirstOrDefault().Item1 > currentGameBoard.minotuarPos[0])
-                        {
-                            currentGameBoard.applyMove("right");
-                            minoPath.RemoveFirst();
-                        }
-
-                    } */
                 }
                 else
                 {
@@ -166,81 +134,6 @@ namespace IS_Project.AI
                 {
                     currentGameBoard.endTurn();
                 }
-                //old ways / testing
-                /*if(currentGameBoard.selectedPiece == "")
-                {
-                    currentGameBoard.selectedPiece = "blue2";
-                }
-
-                if (currentGameBoard.availableMoves == 0)
-                {
-                    currentGameBoard.endTurn();
-                }
-
-                //for testing
-                //string bet = currentGameBoard.gameBoard[currentGameBoard.bluePiece2[0] - 1, currentGameBoard.bluePiece2[1]];
-                //bool mets = !currentGameBoard.impassableList.Contains(currentGameBoard.gameBoard[currentGameBoard.bluePiece2[0] - 1, currentGameBoard.bluePiece2[1]]);
-
-                PlayerPieceBFS movementPath = new PlayerPieceBFS(currentGameBoard);
-                List<(int, int)> playerPath = movementPath.BFS(currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1], "7B").dataList;
-                List<int> lengths = movementPath.getPathLength(currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1], "7B");
-
-                //assuming piece selected
-                currentGameBoard.movePieceByClick(playerPath[currentGameBoard.availableMoves-1].Item1, playerPath[currentGameBoard.availableMoves - 1].Item2);
-                currentGameBoard.availableMoves = 0;
-                //need to make sure that availible moves == 0
-                currentGameBoard.endTurn();
-                //currentGameBoard.availableMoves = getUtility(currentGameBoard);
-
-                foreach ((int, int) item in playerPath)
-                {
-                    currentGameBoard.gameBoard[item.Item1, item.Item2] = "4B";
-                }*/
-
-                //previous use
-                /*while (currentGameBoard.availableMoves > 0)
-                {
-                    //for up
-                    if (playerPath.FirstOrDefault().Item2 < currentGameBoard.bluePiece2[1])
-                    {
-                        currentGameBoard.applyMove("up");
-                        playerPath.RemoveFirst();
-                    }
-                    //for down
-                    else if (playerPath.FirstOrDefault().Item2 > currentGameBoard.bluePiece2[1])
-                    {
-                        currentGameBoard.applyMove("down");
-                        playerPath.RemoveFirst();
-                    }
-                    //for left
-                    else if (playerPath.FirstOrDefault().Item1 < currentGameBoard.bluePiece2[0])
-                    {
-                        currentGameBoard.applyMove("left");
-                        playerPath.RemoveFirst();
-                    }
-                    //for right
-                    else if (playerPath.FirstOrDefault().Item1 > currentGameBoard.bluePiece2[0])
-                    {
-                        currentGameBoard.applyMove("right");
-                        playerPath.RemoveFirst();
-                    }
-
-                }*/
-
-                /*tester
-                for (int i = 0; i < currentGameBoard.availableMoves; ++i)
-                {
-                    if (!currentGameBoard.impassableList.Contains(currentGameBoard.gameBoard[currentGameBoard.bluePiece2[0] - 1, currentGameBoard.bluePiece2[1]]))
-                    {
-                        currentGameBoard.applyMove("left");
-                    }
-                    else if (currentGameBoard.passable.Contains(currentGameBoard.gameBoard[currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1] - 1]))
-                    {
-                        currentGameBoard.applyMove("up");
-                    }
-                }
-                currentGameBoard.endTurn(); */
-
             }
             currentGameBoard.boardState = getUtility(currentGameBoard);
         }
@@ -297,14 +190,6 @@ namespace IS_Project.AI
             {
                 inMinotaurRange = pieceProximity.getMinotaurZoneBFS();
             }
-
-            /*int proximityToMinotaurRed = (inMinotaurRange(gameState.redPiece1, pieceProximity) +
-                                          inMinotaurRange(gameState.redPiece2, pieceProximity) +
-                                          inMinotaurRange(gameState.redPiece3, pieceProximity));
-
-            int proximityToMinotaurBlue = (inMinotaurRange(gameState.bluePiece1, pieceProximity) +
-                                          inMinotaurRange(gameState.bluePiece2, pieceProximity) +
-                                          inMinotaurRange(gameState.bluePiece3, pieceProximity));*/
 
             //length of possible paths
             int pathValues = getPathLengthValue(gameState, pieceProximity);
@@ -470,6 +355,7 @@ namespace IS_Project.AI
 
             //return possibleMoves;
         }
+
         public List<MinMaxNode> generateGreyMoves(GameBoard gameState, bool isBlueTurn)
         {
             List<MinMaxNode> minmaxNodeList = new List<MinMaxNode>();
@@ -685,49 +571,6 @@ namespace IS_Project.AI
             //list contatining the destination and what piece to move there
             ((int, int), (int, int)) bestMove = ((0,0),(0,0));
             List<MinMaxNode> moveList = generatePlayerPieceMoves(_gameState.availableMoves, true, _gameState);
-            /*int blueComparisonUtil = getUtility(_gameState) - 100;
-
-            foreach ((int, int) destination in movementOptions.specificDistBFS(_gameState.bluePiece1[0], _gameState.bluePiece1[1], _gameState.availableMoves))
-            {
-                MinMaxNode mmNode = new MinMaxNode(_gameState);
-                //mmNode.minmaxGameboard.selectedPiece = "blue2";
-                //mmNode.minmaxGameboard.movePieceByClick(destination.Item1, destination.Item2);
-                mmNode.minmaxGameboard.gameBoard[_gameState.bluePiece1[0], _gameState.bluePiece1[1]] = "0";
-                mmNode.minmaxGameboard.gameBoard[destination.Item1, destination.Item2] = "4B";
-                mmNode.minmaxGameboard.bluePiece1[0] = destination.Item1;
-                mmNode.minmaxGameboard.bluePiece1[1] = destination.Item2;
-                if (getUtility(mmNode.minmaxGameboard) > blueComparisonUtil)
-                {
-                    mmNode.currentMove.Add((destination, (_gameState.bluePiece1[0], _gameState.bluePiece1[1])));
-                    moveList.Add(mmNode);
-                }
-            }
-            foreach ((int, int) destination in movementOptions.specificDistBFS(_gameState.bluePiece2[0], _gameState.bluePiece2[1], _gameState.availableMoves))
-            {
-                MinMaxNode mmNode = new MinMaxNode(_gameState);
-                mmNode.minmaxGameboard.gameBoard[_gameState.bluePiece2[0], _gameState.bluePiece2[1]] = "0";
-                mmNode.minmaxGameboard.gameBoard[destination.Item1, destination.Item2] = "4B";
-                mmNode.minmaxGameboard.bluePiece2[0] = destination.Item1;
-                mmNode.minmaxGameboard.bluePiece2[1] = destination.Item2;
-                if (getUtility(mmNode.minmaxGameboard) > blueComparisonUtil)
-                {
-                    mmNode.currentMove.Add((destination, (_gameState.bluePiece2[0], _gameState.bluePiece2[1])));
-                    moveList.Add(mmNode);
-                }
-            }
-            foreach ((int, int) destination in movementOptions.specificDistBFS(_gameState.bluePiece3[0], _gameState.bluePiece3[1], _gameState.availableMoves))
-            {
-                MinMaxNode mmNode = new MinMaxNode(_gameState);
-                mmNode.minmaxGameboard.gameBoard[_gameState.bluePiece3[0], _gameState.bluePiece3[1]] = "0";
-                mmNode.minmaxGameboard.gameBoard[destination.Item1, destination.Item2] = "4B";
-                mmNode.minmaxGameboard.bluePiece3[0] = destination.Item1;
-                mmNode.minmaxGameboard.bluePiece3[1] = destination.Item2;
-                if (getUtility(mmNode.minmaxGameboard) > blueComparisonUtil)
-                {
-                    mmNode.currentMove.Add((destination, (_gameState.bluePiece3[0], _gameState.bluePiece3[1])));
-                    moveList.Add(mmNode);
-                }
-            }*/
 
             foreach (MinMaxNode move in moveList)
             {

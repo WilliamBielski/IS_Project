@@ -65,32 +65,6 @@ namespace IS_Project.Models
                                         { "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "5B"},
                                         { "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "5B", "5B"}
                                     };
-        //moved to const
-        /*public List<((int, int), (int, int))> baseChokepointList = new List<((int, int), (int, int))>()
-        {
-            ((7, 0),(7, 1)), ((11, 0),(11, 1)), ((13, 0),(13, 1)), ((16, 0),(16, 1)), ((18, 0),(18, 1)), ((22, 0),(22, 1)),
-            ((14, 2),(15, 2)),
-            ((0, 5),(1, 5)), ((4, 5),(5,5)), ((9, 5),(10, 5)), ((14, 5),(15, 5)), ((19, 5),(20, 5)), ((24, 5),(25, 5)), ((28, 5),(29, 5)),
-            ((6, 6),(6, 7)), ((11, 6),(11, 7)), ((13, 6),(13, 7)), ((16, 6),(16, 7)), ((18, 6),(18, 7)), ((23, 6),(23, 7)),
-            ((0, 7),(1, 7)), ((28, 7),(29, 7)),
-            ((14, 8),(15, 8)),
-            ((2, 8),(2, 9)), ((27, 8),(27, 9)),
-            ((0, 10),(1, 10)), ((28, 10),(29, 10)),
-            ((12, 11),(13, 11)), ((16, 11),(17, 11)),
-            ((11, 12),(11, 13)), ((18, 12),(18, 13)),
-            ((0, 13),(1, 13)), ((28, 13),(29, 13)),
-            ((2, 14),(2, 15)), ((6, 14),(6, 15)), ((8, 14),(8, 15)), ((21, 14),(21, 15)), ((23, 14),(23, 15)), ((27, 14),(27, 15)),
-            ((0, 16),(1, 16)), ((28, 16),(29, 16)),
-            ((11, 16),(11, 17)), ((18, 16),(18, 17)),
-            ((12, 18),(13, 18)), ((16, 18),(17, 18)),
-            ((0, 19),(1, 19)), ((28, 19),(29, 19)),
-            ((2, 20),(2, 21)), ((27, 20),(27, 21)),
-            ((14, 21),(15, 21)),
-            ((0, 22),(1, 22)), ((28, 22),(29, 22)),
-            ((6, 22),(6, 23)), ((11, 22),(11, 23)), ((13, 22),(13, 23)), ((16, 22),(16, 23)), ((18, 22),(18, 23)), ((23, 22) , (23, 23)),
-            ((0, 24),(1, 24)), ((4, 24),(5,24)), ((9, 24),(10, 24)), ((14, 24),(15, 24)), ((19, 24),(20, 24)), ((24, 24),(25, 24)), ((28, 24),(29, 24)),
-            ((7, 28),(7, 29)), ((11, 28),(11, 29)), ((13, 28) , (13, 29)), ((16, 28) , (16, 29)), ((18, 28) , (18, 29)), ((22, 28) , (22, 29))
-        };*/
 
         public List<((int, int), (int, int))> availableChokepointList = new List<((int, int), (int, int))>()
         {
@@ -252,7 +226,7 @@ namespace IS_Project.Models
                     {
                         selectedPiece = "red3";
                     }
-                    //commented for now as the player should be red
+                    //commented for now as the player should be red (can unlock 2 player mode)
                     /*else if (Vector2.Distance(new Vector2((bluePiece1[0] * tileSize) + 24, (bluePiece1[1] * tileSize) + 24), mouseState.Position.ToVector2()) < 24 && !isRedTurn)
                             {
                                 selectedPiece = "blue1";
@@ -298,12 +272,6 @@ namespace IS_Project.Models
                     movePieceByKey("right");
                     heldKey = 4;
                 }
-
-                //mino collision conditions
-                //if (selectedPiece == "mino" && isBlackActive)
-                //{
-                //    minoCollisionCheck(minotuarPos[0], minotuarPos[1]);
-                //}
             }
 
             //movement for wall (arrow keys)
@@ -1013,6 +981,7 @@ namespace IS_Project.Models
 
             checkWallPosition(originalPos);
         }
+        //rotates a wall
         public void rotateWall()
         {
             int[,] originalPos = { { selectedWall[0, 0], selectedWall[0, 1] }, { selectedWall[1, 0], selectedWall[1, 1] } };
@@ -1065,6 +1034,7 @@ namespace IS_Project.Models
             }
             checkWallPosition(originalPos);
         }
+        //updates wallPositionList when a human does Grey
         public void checkWallPosition(int[,] originalPos)
         {
             BoardSearch ppBFS = new BoardSearch(this);
