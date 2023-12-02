@@ -222,7 +222,7 @@ namespace IS_Project.AI
         public int getDistanceToCenterValue(bool isBlueTurn, GameBoard gamestate, BoardSearch ppBFS)
         {
             int sum = 0;
-            if (!isBlueTurn)
+            /*if (!isBlueTurn)
             {
                 List<int[]> pieceList = new List<int[]>() { gamestate.redPiece1, gamestate.redPiece2, gamestate.redPiece3 };
                 foreach (int[] piece in pieceList)
@@ -251,14 +251,14 @@ namespace IS_Project.AI
                         sum += 35 - ppBFS.BFS(piece[0], piece[1], "7B").dataList.Count;
                     }
                 }
-            }
-            return sum;
-            /*List<int> distances = ppBFS.getFastestPlayerPiecePathLengths(gamestate, isBlueTurn);
+            }*/
+            
+            List<int> distances = ppBFS.getFastestPlayerPiecePathsLengths(gamestate, isBlueTurn);
             if (distances.Contains(1))
             {
                 foreach (int distance in distances)
                 {
-                    if (distance == 1)
+                    if (distance == 0)
                     {
                         sum += 70;
                     }
@@ -268,7 +268,8 @@ namespace IS_Project.AI
                     }
                 }
             }
-            //35 - path length for each*/
+            //35 - path length for each
+            return sum;
             /*double maxDist = Math.Sqrt(Math.Pow(14.5, 2) + Math.Pow(14.5, 2));
             double distanceToCenter = Math.Sqrt(Math.Pow((curPiece[0] - 14.5), 2) + Math.Pow((curPiece[1] - 14.5), 2));
             return maxDist - distanceToCenter;*/

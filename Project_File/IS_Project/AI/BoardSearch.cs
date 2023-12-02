@@ -101,7 +101,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node((adjX, adjY));
                             adjNode.next = currentNode;
@@ -137,6 +137,10 @@ namespace IS_Project.AI
             List<(int, int)> pathList = new List<(int, int)>();
             Node currentNode;
 
+            //efficiency? |
+            //            |
+            //            |
+            //            \/
             foreach (var coords in dataList)
             {
                 if (nwChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
@@ -168,7 +172,7 @@ namespace IS_Project.AI
 
                 if (isValid(adjX, adjY, visited))
                 {
-                    if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                    if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                     {
                         Node adjNode = new Node(adjTuple);
                         adjNode.next = currentNode;
@@ -216,7 +220,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited) && !offLimitCoords.ContainsKey(adjTuple))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node(adjTuple);
                             adjNode.next = currentNode;
@@ -303,19 +307,19 @@ namespace IS_Project.AI
         }
 
         //slightly more efficient method for determining distance to center (vs 3 BFS's)?
-        // roughly 2.5 BFS's
-        public List<int> getFastestPlayerPiecePathLengths(GameBoard gamestate, bool isBlueTurn)
+        // roughly 2.75 BFS's
+        public List<int> getFastestPlayerPiecePathsLengths(GameBoard gamestate, bool isBlueTurn)
         {
             List<int> pathLengths = new List<int>();
 
             //x, y, moves till end-zone
-            List<(int, int)> pathList = new List<(int, int)>();
-            List<int> depthList = new List<int>();
+            Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
+            Dictionary<(int, int), int> chokepointCmpltList = new Dictionary<(int, int), int>();
             Node currentNode;
 
             List<int[]> pieceList;
             string objective;
-            if (isBlueTurn)
+            if (!isBlueTurn)
             {
                 pieceList = new List<int[]>() { gamestate.redPiece1, gamestate.redPiece2, gamestate.redPiece3 };
                 objective = "7R";
@@ -326,18 +330,19 @@ namespace IS_Project.AI
                 objective = "7B";
             }
 
-            for (int j = 0; j < 3; j++)
+            for (int j = 1; j <= 3; j++)
             {
                 // Stores indices of the matrix cells
                 Queue<Node> queue = new Queue<Node>();
                 Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
+
                 Node n = new Node((pieceList[j][0], pieceList[j][1]));
                 queue.Enqueue(n);
                 visited.Add(n.data, n.depth);
 
-                int remainingMoves = 100;
-                int nodesInQueue = 100;
-                int numToBeat = 100;
+                //depth that has to be beaten
+                int depthLimit = 100;
+                Node connectionNode = new Node(n.data);
 
                 // Iterate while the queue
                 // is not empty
@@ -353,38 +358,147 @@ namespace IS_Project.AI
                     //if current node == objective, the pathList will be sent back
                     if (_gameBoard.gameBoard[x, y] == objective)
                     {
-                        int counter = 0;
+                        int movesFromGoal = 0;//moves from goal
                         while (currentNode.next != null)
                         {
-                            pathList.Insert(0, (currentNode.data.Item1, currentNode.data.Item2));
-                            depthList.Insert(0, counter);
-                            counter++;
+                            traveledList.Add(currentNode.data, movesFromGoal);
+                            if (nwChokepointList.ContainsKey(currentNode.data) && !chokepointCmpltList.ContainsKey(currentNode.data))
+                            {
+                                chokepointCmpltList.Add(nwChokepointList[currentNode.data].Item2, movesFromGoal + 1);
+                            }
+                            else if (seChokepointList.ContainsKey(currentNode.data) && !chokepointCmpltList.ContainsKey(currentNode.data))
+                            {
+                                chokepointCmpltList.Add(seChokepointList[currentNode.data].Item1, movesFromGoal + 1);
+                            }
+                            movesFromGoal++;
                             currentNode = currentNode.next;
                         }
-                        pathLengths.Add(pathList.Count - pathLengths.Sum());
+                        pathLengths.Add(traveledList.Count - pathLengths.Sum());
                         break;
                     }
                     //if current node hits a previous fastest path, it will calculate assuming that path will be followed
 
-
-                    // Goes to the adjacent cells
-                    for (int i = 0; i < 4; i++)
+                    //if not passes through a traveled chokepoint
+                    if (currentNode.complementDir == 0)
                     {
-
-                        int adjX = x + dirVectRow[i];
-                        int adjY = y + dirVectCol[i];
-
-                        if (pathList.Contains((adjX, adjY)))
+                        // Goes to the adjacent cells
+                        for (int i = 0; i < 4; i++)
                         {
-                            if (remainingMoves > 0 && depthList[pathList.IndexOf((adjX, adjY))] < remainingMoves)
+
+                            int adjX = x + dirVectRow[i];
+                            int adjY = y + dirVectCol[i];
+
+                            //node expansion hits previously taken route
+                            if (traveledList.ContainsKey((adjX, adjY)))
                             {
-                                remainingMoves = depthList[pathList.IndexOf((adjX, adjY))];
-                                nodesInQueue = queue.Count;
+                                if (traveledList[(adjX, adjY)] + currentNode.depth < depthLimit)
+                                {
+                                    //new # moves to beat
+                                    depthLimit = traveledList[(adjX, adjY)] + currentNode.depth;
+                                    connectionNode = currentNode;
+                                }
+                            }
+                            else if (isValid(adjX, adjY, visited) && currentNode.depth + 1 < depthLimit)
+                            {
+                                if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
+                                {
+                                    Node adjNode = new Node((adjX, adjY));
+                                    adjNode.next = currentNode;
+                                    adjNode.depth = currentNode.depth + 1;
+                                    if (chokepointCmpltList.ContainsKey(adjNode.data))
+                                    {
+                                        //1 = N, 2 = S, 3 = W, 4 = E -x = left -y = up
+                                        if (nwChokepointList.ContainsKey(adjNode.data))
+                                        {
+                                            //if its N
+                                            if (nwChokepointList[adjNode.data].Item1.Item1 == nwChokepointList[adjNode.data].Item2.Item1)
+                                            {
+                                                adjNode.complementDir = 1 * dirVectRow[i];
+                                            }
+                                            else
+                                            {
+                                                adjNode.complementDir = 3 * dirVectCol[i];
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (seChokepointList[adjNode.data].Item1.Item1 == seChokepointList[adjNode.data].Item2.Item1)
+                                            {
+                                                adjNode.complementDir = 2 * dirVectRow[i];
+                                            }
+                                            else
+                                            {
+                                                adjNode.complementDir = 4 * dirVectCol[i];
+                                            }
+                                        }
+                                    }
+                                    queue.Enqueue(adjNode);
+                                }
+                                visited.Add((adjX, adjY), currentNode.depth + 1);
                             }
                         }
-                        else if (isValid(adjX, adjY, visited))
+                    }
+                    //if went through a traveled ChokePoint
+                    else
+                    {
+                        int adjX = x;
+                        int adjY = y;
+                        (int, int) checkDir = (0, 0);
+                        switch (currentNode.complementDir)
                         {
-                            if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                            case -1:
+                                adjX = x - 1;
+                                checkDir = (0, -1);
+                                break;
+
+                            case 1:
+                                adjX = x + 1;
+                                checkDir = (0, -1);
+                                break;
+
+                            case -2:
+                                adjX = x - 1;
+                                checkDir = (0, 1);
+                                break;
+
+                            case 2:
+                                adjX = x + 1;
+                                checkDir = (0, 1);
+                                break;
+
+                            case -3:
+                                adjY = y - 1;
+                                checkDir = (-1, 0);
+                                break;
+
+                            case 3:
+                                adjY = y + 1;
+                                checkDir = (-1, 0);
+                                break;
+
+                            case -4:
+                                adjY = y - 1;
+                                checkDir = (1, 0);
+                                break;
+
+                            case 4:
+                                adjY = y + 1;
+                                checkDir = (1, 0);
+                                break;
+                        }
+                        //node expansion hits previously taken route
+                        if (traveledList.ContainsKey((adjX, adjY)))
+                        {
+                            if (traveledList[(adjX, adjY)] + currentNode.depth < depthLimit)
+                            {
+                                //new # moves to beat
+                                depthLimit = traveledList[(adjX, adjY)] + currentNode.depth;
+                                connectionNode = currentNode;
+                            }
+                        }
+                        else if (isValid(adjX, adjY, visited) && currentNode.depth + 1 < depthLimit && traveledList.ContainsKey((adjX + checkDir.Item1, adjY + checkDir.Item1)))
+                        {
+                            if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                             {
                                 Node adjNode = new Node((adjX, adjY));
                                 adjNode.next = currentNode;
@@ -394,26 +508,22 @@ namespace IS_Project.AI
                             visited.Add((adjX, adjY), currentNode.depth + 1);
                         }
                     }
-                    if (nodesInQueue > 0)
+                }
+                //if depth limit was hit before objective reached
+                if (pathLengths.Count < j)
+                {
+                    while (connectionNode.next != null)
                     {
-                        nodesInQueue--;
-                        if (remainingMoves > 0 && nodesInQueue == 0)
-                        {
-                            remainingMoves--;
-                            nodesInQueue = queue.Count;
-                        }
+                        traveledList.Add(connectionNode.data, depthLimit - (connectionNode.depth - 1));
+                        connectionNode = connectionNode.next;
                     }
-                    if (remainingMoves == 0)
-                    {
-                        pathLengths.Add(numToBeat);
-                        break;
-                    }
-                     
+                    pathLengths.Add(depthLimit);
                 }
             }
             return pathLengths;
         }
 
+        //returns all reachable locations for a given distance
         public List<(int, int)> getSpecificDistBFS(int row, int col, int dist)
         {
             List<(int, int)> possibleDestinations = new List<(int, int)>();
@@ -461,7 +571,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node((adjX, adjY));
                             adjNode.next = currentNode;
@@ -478,6 +588,12 @@ namespace IS_Project.AI
         }
 
         //finds how object can make it to position fastest maxes out 
+
+        ///EFFFFFFFFFFFFFFFFFFFFFICIENCY HERRE!!!!!!!!!!!!!!!!!!!! <summary>
+        /// EFFFFFFFFFFFFFFFFFFFFFICIENCY HERRE!!!!!!!!!!!!!!!!!!!!
+        /// ///EFFFFFFFFFFFFFFFFFFFFFICIENCY HERRE!!!!!!!!!!!!!!!!!!!!\/\/
+        /// ///EFFFFFFFFFFFFFFFFFFFFFICIENCY HERRE!!!!!!!!!!!!!!!!!!!!\/\/
+        /// ///EFFFFFFFFFFFFFFFFFFFFFICIENCY HERRE!!!!!!!!!!!!!!!!!!!!\/\/
         public List<(int, int)> getBfsToCoord(int xPos, int yPos, (int, int) dest, int maxDist)
         {
             // Stores indices of the matrix cells
@@ -534,7 +650,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node((adjX, adjY));
                             adjNode.next = currentNode;
@@ -600,7 +716,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node((adjX, adjY));
                             adjNode.next = currentNode;
@@ -673,7 +789,7 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (!_gameBoard.impassableList.Contains(_gameBoard.gameBoard[adjX, adjY]))
+                        if (!_gameBoard.impassableList.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             Node adjNode = new Node((adjX, adjY));
                             adjNode.next = currentNode;

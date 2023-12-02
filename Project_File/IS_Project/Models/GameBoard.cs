@@ -153,7 +153,10 @@ namespace IS_Project.Models
             { ((25, 27), (26, 27)), ((25, 27), (26, 27)) },
         };
 
-        public string[] impassableList = { "1", "3N", "3S", "3E", "3W", "T" };
+        public Dictionary<string, int> impassableList = new Dictionary<string, int>()
+        {
+            { "1" , 1 }, { "3N", 3 }, { "3S", 3 }, { "3E", 3 }, { "3W", 3 }, { "T", 8 }
+        };
         public string[] passable = { "0", "4R", "4B" };
         public string[] playerBases = { "5R", "5B", "7R", "7B" };
 
@@ -646,7 +649,7 @@ namespace IS_Project.Models
                 switch (direction)
                 {
                     case "up":
-                        if (curPiece[1] > 0 && !impassableList.Contains(gameBoard[curPiece[0], curPiece[1] - 1]))
+                        if (curPiece[1] > 0 && !impassableList.ContainsKey(gameBoard[curPiece[0], curPiece[1] - 1]))
                         {
                             if (gameBoard[curPiece[0], curPiece[1]].Contains("4") && availableMoves > 0)
                             {
@@ -674,7 +677,7 @@ namespace IS_Project.Models
                         }
                         break;
                     case "down":
-                        if (curPiece[1] < 29 && !impassableList.Contains(gameBoard[curPiece[0], curPiece[1] + 1]))
+                        if (curPiece[1] < 29 && !impassableList.ContainsKey(gameBoard[curPiece[0], curPiece[1] + 1]))
                         {
                             if (gameBoard[curPiece[0], curPiece[1]].Contains("4") && availableMoves > 0)
                             {
@@ -701,7 +704,7 @@ namespace IS_Project.Models
                         }
                         break;
                     case "left":
-                        if (curPiece[0] > 0 && !impassableList.Contains(gameBoard[curPiece[0] - 1, curPiece[1]]))
+                        if (curPiece[0] > 0 && !impassableList.ContainsKey(gameBoard[curPiece[0] - 1, curPiece[1]]))
                         {
                             if (gameBoard[curPiece[0], curPiece[1]].Contains("4") && availableMoves > 0)
                             {
@@ -728,7 +731,7 @@ namespace IS_Project.Models
                         }
                         break;
                     case "right":
-                        if (curPiece[0] < 29 && !impassableList.Contains(gameBoard[curPiece[0] + 1, curPiece[1]]))
+                        if (curPiece[0] < 29 && !impassableList.ContainsKey(gameBoard[curPiece[0] + 1, curPiece[1]]))
                         {
                             if (gameBoard[curPiece[0], curPiece[1]].Contains("4") && availableMoves > 0)
                             {

@@ -11,12 +11,14 @@ namespace IS_Project.Models
         public (int, int) data;
         public Node next;
         public int depth;
+        public int complementDir;
         public Node() { }
         public Node((int, int) inputData)
         {
             data = inputData;
             next = null;
             depth = 0;
+            complementDir = 0;
         }
     }
 }
