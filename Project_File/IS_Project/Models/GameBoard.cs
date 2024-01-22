@@ -14,7 +14,7 @@ namespace IS_Project.Models
 {
     public class GameBoard : Sprites
     {
-        const int gridSize = 30;
+        const int gridSize = 30; //30 by 30
         const int tileSize = 48;
 
         MouseState mouseState;
@@ -23,7 +23,7 @@ namespace IS_Project.Models
         int heldKey = 0;
 
         public int[] redPiece1 = { 1, 0 };
-        public int[] redPiece2 = { 2, 2 };
+        public int[] redPiece2 = { 0, 0 };
         public int[] redPiece3 = { 0, 1 };
 
         public int[] bluePiece1 = { 29, 28 };
@@ -36,7 +36,7 @@ namespace IS_Project.Models
 
         public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
                                         { "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"},
-                                        { "0", "0", "4R", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
+                                        { "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "3W", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "3W", "0", "0"},
                                         { "0", "0", "3E", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
                                         { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -806,7 +806,7 @@ namespace IS_Project.Models
                     availableMoves -= movesNeeded;
                     if (gameBoard[xDest, yDest] == "0")
                     {
-                        checkPieceWallCollision(xDest, xDest, (curPiece[0], curPiece[1]));
+                        checkPieceWallCollision(xDest, yDest, (curPiece[0], curPiece[1]));
 
                         if (selectedPiece != "mino")
                         {
@@ -1115,7 +1115,7 @@ namespace IS_Project.Models
                 else
                 {
                     wallPositionList.Remove(originalPos);
-                    wallPositionList.Add(originalPos, originalPos);
+                    wallPositionList.Add(selWallToTup, selWallToTup);
                 }
 
                 //if the wall was in a chokepoint but is now moved
@@ -1155,7 +1155,7 @@ namespace IS_Project.Models
                 selectedWall[1, 1] = originalPos.Item2.Item2;
             }
         }
-        public void checkPieceWallCollision(int xPos, int yPos, (int, int) prevPos)
+        public void checkPieceWallCollision(int newXPos, int newYPos, (int, int) prevPos)
         {
             //if a piece moves out of a chokepoint
             if (nwChokepointList.ContainsKey(prevPos))
@@ -1168,15 +1168,15 @@ namespace IS_Project.Models
             }
 
             //if the new position is in a chokepoint
-            if (xPos != -1)
+            if (newXPos != -1)
             {
-                if (nwChokepointList.ContainsKey((xPos, yPos)))
+                if (nwChokepointList.ContainsKey((newXPos, newYPos)))
                 {
-                    availableChokepointList.Remove(nwChokepointList[(xPos, yPos)]);
+                    availableChokepointList.Remove(nwChokepointList[(newXPos, newYPos)]);
                 }
-                else if (nwChokepointList.ContainsKey((xPos, yPos)))
+                else if (seChokepointList.ContainsKey((newXPos, newYPos)))
                 {
-                    availableChokepointList.Remove(seChokepointList[(xPos, yPos)]);
+                    availableChokepointList.Remove(seChokepointList[(newXPos, newYPos)]);
                 }
             }
         }

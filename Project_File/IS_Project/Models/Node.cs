@@ -12,6 +12,7 @@ namespace IS_Project.Models
         public Node next;
         public int depth;
         public int complementDir;
+        public (int, int) connectionLoc;
         public Node() { }
         public Node((int, int) inputData)
         {
@@ -19,6 +20,7 @@ namespace IS_Project.Models
             next = null;
             depth = 0;
             complementDir = 0;
+            connectionLoc = (0,0);
         }
     }
 }

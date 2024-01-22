@@ -22,6 +22,17 @@ namespace IS_Project.AI
         {
             currentGameBoard = gB;
         }
+        int minMaxDecCount = 0;
+        int getUtilCount = 0;
+        int getUtilNoPathsCount = 0;
+        int getDistToCenterCount = 0;
+        int getAllPathLengthsCount = 0;
+        int getAllPossibleCount = 0;
+        int genGreyMovesCount = 0;
+        int genPlayerMovesCount = 0;
+        int botMoveCount = 0;
+
+
         public void Update()
         {
             if (!currentGameBoard.diceRolled)
@@ -114,7 +125,11 @@ namespace IS_Project.AI
             {
                 if (currentGameBoard.selectedPiece == "")
                 {
-                    ((int, int),(int, int)) playerPieceMove = getPlayerPieceDecision(currentGameBoard, 1);
+                    ((int, int),(int, int)) playerPieceMove = getPlayerPieceDecision(currentGameBoard, 2);
+                    if (playerPieceMove == ((0,0),(0,0)))
+                    {
+                        Console.WriteLine("move fail");
+                    }
                     if (playerPieceMove.Item2 == (currentGameBoard.bluePiece1[0], currentGameBoard.bluePiece1[1]))
                     {
                         botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, currentGameBoard.bluePiece1, true);
@@ -140,6 +155,7 @@ namespace IS_Project.AI
 
         public int minMaxDecision(MinMaxNode minmaxNode, bool currentPLayerBlue, int depth)
         {
+            minMaxDecCount++;
             if (depth == 0 || (minmaxNode.minmaxGameboard.redVictory || minmaxNode.minmaxGameboard.blueVictory))
             {
                 return getUtility(minmaxNode.minmaxGameboard);
@@ -147,10 +163,10 @@ namespace IS_Project.AI
 
 
 
-            //for maxing
+            //for maxing (currentPlayerBlue == true)
             if (currentPLayerBlue)
             {
-                int bestValue = 0;
+                int bestValue = -10000;//<--value to beat
                 getAllPossibleMoves(minmaxNode, true, minmaxNode.currentMove.Count != 2);
                 foreach (MinMaxNode child in minmaxNode.children)
                 {
@@ -160,27 +176,28 @@ namespace IS_Project.AI
                 }
                 return bestValue;
             }
-            //for minimizing
+            //for minimizing (currentPlayerBlue == false)
             else
             {
-                int bestValue = 0;
+                int worstValue = 10000;//<--value to beat
                 getAllPossibleMoves(minmaxNode, false, minmaxNode.currentMove.Count != 2);
                 foreach (MinMaxNode child in minmaxNode.children)
                 {
                     int childValue = minMaxDecision(child, !currentPLayerBlue, (depth - 1));
-                    bestValue = Math.Min(bestValue, childValue);
+                    worstValue = Math.Min(worstValue, childValue);
                 }
-                return bestValue;
+                return worstValue;
             }
         }
 
         public int getUtility(GameBoard gameState)
         {
+            getUtilCount++;
             BoardSearch pieceProximity = new BoardSearch(gameState);
             //proximity of all pieces to center (30 moves?)(minimum number of moves)
-            int redDistanceToCenter = (getDistanceToCenterValue(false, gameState, pieceProximity) * 15);
+            (int, List<bfsRespose>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
 
-            int blueDistanceToCenter = (getDistanceToCenterValue(true, gameState, pieceProximity) * 15);
+            (int, List<bfsRespose>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
 
             //player pieces within 8 of minotaur
             //[0] = number of red pieces in minotaur range
@@ -192,19 +209,21 @@ namespace IS_Project.AI
             }
 
             //length of possible paths
-            int pathValues = getPathLengthValue(gameState, pieceProximity);
+            int pathValues = getPathLengthValue(gameState, pieceProximity, blueDistanceToCenter.Item2, redDistanceToCenter.Item2);
 
-            int utility = (blueDistanceToCenter - redDistanceToCenter) + ((inMinotaurRange[1] - inMinotaurRange[0])*-100) + pathValues;
+            int utility = (blueDistanceToCenter.Item1 - redDistanceToCenter.Item1) * 15 + ((inMinotaurRange[1] - inMinotaurRange[0])*-125) + (pathValues * 5);
             return utility;
         }
 
+        //Utility method that assuumes the path value are already caluculated
         public int getUtilitySansPaths(GameBoard gameState, int allPathValues)
         {
+            getUtilNoPathsCount++;
             BoardSearch pieceProximity = new BoardSearch(gameState);
             //proximity of all pieces to center (30 moves?)(minimum number of moves)
-            int redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
+            (int, List<bfsRespose>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
 
-            int blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
+            (int, List<bfsRespose>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
 
             //player pieces within 8 of minotaur
             //[0] = number of red pieces in minotaur range
@@ -215,64 +234,46 @@ namespace IS_Project.AI
                 inMinotaurRange = pieceProximity.getMinotaurZoneBFS();
             }
 
-            int utility = ((blueDistanceToCenter - redDistanceToCenter) * 15) + ((inMinotaurRange[1] - inMinotaurRange[0]) * -100) + allPathValues * 5;
+            int utility = ((blueDistanceToCenter.Item1 - redDistanceToCenter.Item1) * 15) + ((inMinotaurRange[1] - inMinotaurRange[0]) * -100) + allPathValues * 5;
             return utility;
         }
 
-        public int getDistanceToCenterValue(bool isBlueTurn, GameBoard gamestate, BoardSearch ppBFS)
+        public (int, List<bfsRespose>) getDistanceToCenterValue(bool isBlueTurn, GameBoard gamestate, BoardSearch ppBFS)
         {
-            int sum = 0;
-            /*if (!isBlueTurn)
+            getDistToCenterCount++;
+            //List <(int, Dictionary<(int, int), (int, int)>)> PathsAndDistances = ppBFS.getFastestPlayerPiecePathsLengths(gamestate, isBlueTurn);
+            //List<Dictionary<(int, int), (int, int)>> piecePaths = new List<Dictionary<(int, int), (int, int)>>();
+            List<bfsRespose> piecePaths = new List<bfsRespose>();
+            List<int[]> pieceList;
+            string objective;
+            if (!isBlueTurn)
             {
-                List<int[]> pieceList = new List<int[]>() { gamestate.redPiece1, gamestate.redPiece2, gamestate.redPiece3 };
-                foreach (int[] piece in pieceList)
-                {
-                    if (gamestate.redVictoryTiles.ContainsKey((piece[0], piece[1])))
-                    {
-                        sum += 70;
-                    }
-                    else
-                    {
-                        sum += 35 - ppBFS.BFS(piece[0], piece[1], "7R").dataList.Count;
-                    }
-                }
+                pieceList = new List<int[]>() { gamestate.redPiece1, gamestate.redPiece2, gamestate.redPiece3 };
+                objective = "7R";
             }
             else
             {
-                List<int[]> pieceList = new List<int[]>() { gamestate.bluePiece1, gamestate.bluePiece2, gamestate.bluePiece3 };
-                foreach (int[] piece in pieceList)
-                {
-                    if (gamestate.blueVictoryTiles.ContainsKey((piece[0], piece[1])))
-                    {
-                        sum += 70;
-                    }
-                    else
-                    {
-                        sum += 35 - ppBFS.BFS(piece[0], piece[1], "7B").dataList.Count;
-                    }
-                }
-            }*/
-            
-            List<int> distances = ppBFS.getFastestPlayerPiecePathsLengths(gamestate, isBlueTurn);
-            if (distances.Contains(1))
-            {
-                foreach (int distance in distances)
-                {
-                    if (distance == 0)
-                    {
-                        sum += 70;
-                    }
-                    else
-                    {
-                        sum += 35 - distance;
-                    }
-                }
+                pieceList = new List<int[]>() { gamestate.bluePiece1, gamestate.bluePiece2, gamestate.bluePiece3 };
+                objective = "7B";
             }
-            //35 - path length for each
-            return sum;
-            /*double maxDist = Math.Sqrt(Math.Pow(14.5, 2) + Math.Pow(14.5, 2));
-            double distanceToCenter = Math.Sqrt(Math.Pow((curPiece[0] - 14.5), 2) + Math.Pow((curPiece[1] - 14.5), 2));
-            return maxDist - distanceToCenter;*/
+            int sum = 0;
+            foreach (int[] piece in pieceList)
+            {
+                bfsRespose piecePath = ppBFS.BFS(piece[0], piece[1], objective);
+                if (gamestate.gameBoard[piece[0], piece[1]] == objective)
+                {
+                    sum += 70;
+                }
+                else if(piecePath.dataList.Count > 0)
+                {
+                    sum += 35 - piecePath.dataList.Count;
+                }else if(piecePath.dataList.Count == 0 && gamestate.gameBoard[piece[0], piece[1]] != objective)
+                {
+                    sum -= 250;
+                }
+                piecePaths.Add(piecePath);
+            }
+            return (sum, piecePaths);
         }
 
         /*public int inMinotaurRange(int[] curPiece, PlayerPieceBFS minoProximity)
@@ -291,24 +292,27 @@ namespace IS_Project.AI
             }
         }*/
 
-        public int getPathLengthValue(GameBoard gamestate, BoardSearch pathOptions)
+        public int getPathLengthValue(GameBoard gamestate, BoardSearch pathOptions, List<bfsRespose> BlueFastPaths, List<bfsRespose> RedFastPaths)
         {
-            int blueSum = ((35 - (pathOptions.getPathLengths(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B").Sum() / 3)) +
-                           (35 - (pathOptions.getPathLengths(gamestate.bluePiece2[0], gamestate.bluePiece2[1], "7B").Sum() / 3)) +
-                           (35 - (pathOptions.getPathLengths(gamestate.bluePiece3[0], gamestate.bluePiece3[1], "7B").Sum() / 3)));
+            getAllPathLengthsCount++;
+            ////Can just pass the first route (fastest from the dist to center method!!!!!!\\\///
+            ///!!!!!!
+            int blueSum = ((35 - (pathOptions.getPathLengthsMinusFirst(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B", BlueFastPaths[0]).Sum() / 3)) +
+                           (35 - (pathOptions.getPathLengthsMinusFirst(gamestate.bluePiece2[0], gamestate.bluePiece2[1], "7B", BlueFastPaths[1]).Sum() / 3)) +
+                           (35 - (pathOptions.getPathLengthsMinusFirst(gamestate.bluePiece3[0], gamestate.bluePiece3[1], "7B", BlueFastPaths[2]).Sum() / 3)));
 
-            int redSum = ((35 - (pathOptions.getPathLengths(gamestate.redPiece1[0], gamestate.redPiece1[1], "7R").Sum() / 3)) +
-                          (35 - (pathOptions.getPathLengths(gamestate.redPiece2[0], gamestate.redPiece2[1], "7R").Sum() / 3)) +
-                          (35 - (pathOptions.getPathLengths(gamestate.redPiece3[0], gamestate.redPiece3[1], "7R").Sum() / 3)));
+            int redSum = ((35 - (pathOptions.getPathLengthsMinusFirst(gamestate.redPiece1[0], gamestate.redPiece1[1], "7R", RedFastPaths[0]).Sum() / 3)) +
+                          (35 - (pathOptions.getPathLengthsMinusFirst(gamestate.redPiece2[0], gamestate.redPiece2[1], "7R", RedFastPaths[1]).Sum() / 3)) +
+                          (35 - (pathOptions.getPathLengthsMinusFirst(gamestate.redPiece3[0], gamestate.redPiece3[1], "7R", RedFastPaths[2]).Sum() / 3)));
             return blueSum - redSum;
         }
 
-
         public void getAllPossibleMoves(MinMaxNode minmaxNode, bool isBlueTurn, bool includeGrey)
         {
+            getAllPossibleCount++;
             //List<MinMaxNode> possibleMoves = new List<MinMaxNode>();
 
-            if (isBlueTurn)
+            /*if (isBlueTurn)
             {
                 //adds player moves to the mix for 3 to 6
                 for (int i = 3; i <= 6; i++)
@@ -320,7 +324,8 @@ namespace IS_Project.AI
             else
             {
                 minmaxNode.children.AddRange(generatePlayerPieceMoves(6, isBlueTurn, minmaxNode.minmaxGameboard));
-            }
+            }*/
+            minmaxNode.children.AddRange(generatePlayerPieceMoves(6, isBlueTurn, minmaxNode));
 
             if (includeGrey)
             {
@@ -359,6 +364,7 @@ namespace IS_Project.AI
 
         public List<MinMaxNode> generateGreyMoves(GameBoard gameState, bool isBlueTurn)
         {
+            genGreyMovesCount++;
             List<MinMaxNode> minmaxNodeList = new List<MinMaxNode>();
             int baseBoardUtil = getUtility(gameState);
 
@@ -381,7 +387,7 @@ namespace IS_Project.AI
                 }
                 //no-trap rule
                 //if adding a wall to this position would trap a piece, then the same aplies to moving a wall this position
-                if (isBlueTurn ? !ppBFS.isOpponentTrapped(addWallMove.minmaxGameboard, isBlueTurn) : !ppBFS.isOpponentTrapped(addWallMove.minmaxGameboard, isBlueTurn))
+                if (ppBFS.isOpponentTrapped(addWallMove.minmaxGameboard, isBlueTurn))
                 {
                     continue;
                 }
@@ -435,58 +441,65 @@ namespace IS_Project.AI
             return minmaxNodeList;
         }
 
-        public List<MinMaxNode> generatePlayerPieceMoves(int numMoves, bool isBlueTurn, GameBoard _gameState)
+        public List<MinMaxNode> generatePlayerPieceMoves(int numMoves, bool isBlueTurn, MinMaxNode parentNode)
         {
+            genPlayerMovesCount++;
+            GameBoard _gameState = parentNode.minmaxGameboard;
             List<MinMaxNode> boards = new List<MinMaxNode>();
             BoardSearch playerMovement = new BoardSearch(_gameState);
-
-            int red1PathVal = (35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3));
-            int red2PathVal = (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3));
-            int red3PathVal = (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3));
-            int redPathSum = (red1PathVal + red2PathVal + red3PathVal) * 5;
-
-            int blue1PathVal = (35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7B").Sum() / 3));
-            int blue2PathVal = (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3));
-            int blue3PathVal = (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3));
-            int bluePathSum = (blue1PathVal + blue2PathVal + blue3PathVal) * 5;
+            if (parentNode.bluePathVals.Sum() == 0 && parentNode.redPathVals.Sum() == 0)
+            {
+                parentNode.redPathVals[0] = (35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3));
+                parentNode.redPathVals[1] = (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3));
+                parentNode.redPathVals[2] = (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3));
+                parentNode.bluePathVals[0] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7B").Sum() / 3));
+                parentNode.bluePathVals[1] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3));
+                parentNode.bluePathVals[2] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3));
+            }
+            int redPathSum = (parentNode.bluePathVals.Sum()) * 5;
+            int bluePathSum = (parentNode.bluePathVals.Sum()) * 5;
 
             _gameState.availableMoves = numMoves;
+            int comparisonUtil = getUtility(_gameState) + (isBlueTurn ? -150 : 150);
             if (!isBlueTurn)
             {
-                int redComparisonUtil = getUtility(_gameState) + 150;
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece1[0], _gameState.redPiece1[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece1[0], _gameState.redPiece1[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
-                    /*mmNode.minmaxGameboard.selectedPiece = "blue2";
-                    mmNode.minmaxGameboard.movePieceByClick(destination.Item1, destination.Item2);*/
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                            bluePathSum - ((35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3)) + red2PathVal + red3PathVal )*5) 
-                                                                                                                                                                               < redComparisonUtil)
+                                            bluePathSum - ((35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3)) + 
+                                                           parentNode.redPathVals[1] + 
+                                                           parentNode.redPathVals[2] )*5) 
+                                                                                                                                                                               < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece1[0], _gameState.redPiece1[1])));
                         boards.Add(mmNode);
                     }
                 }
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece2[0], _gameState.redPiece2[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece2[0], _gameState.redPiece2[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                            bluePathSum - (red1PathVal + (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3)) + red3PathVal) * 5) 
-                                                                                                                                                                                < redComparisonUtil)
+                                            bluePathSum - (parentNode.redPathVals[0] + 
+                                                           (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3)) + 
+                                                           parentNode.redPathVals[2]) * 5) 
+                                                                                                                                                                                < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece2[0], _gameState.redPiece2[1])));
                         boards.Add(mmNode);
                     }
                 }
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece3[0], _gameState.redPiece3[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece3[0], _gameState.redPiece3[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                            bluePathSum - (red1PathVal + red2PathVal + (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3))) * 5)
-                                                                                                                                                                                < redComparisonUtil)
+                                            bluePathSum - (parentNode.redPathVals[0] + 
+                                                           parentNode.redPathVals[1] + 
+                                                           (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3))) * 5)
+                                                                                                                                                                                < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece3[0], _gameState.redPiece3[1])));
                         boards.Add(mmNode);
@@ -496,38 +509,43 @@ namespace IS_Project.AI
 
             else if (isBlueTurn)
             {
-                int blueComparisonUtil = getUtility(_gameState) - 150;
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece1[0], _gameState.bluePiece1[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece1[0], _gameState.bluePiece1[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece1, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                           ((35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7B").Sum() / 3)) + blue2PathVal + blue3PathVal) * 5 - redPathSum) 
-                                                                                                                                                                                 > blueComparisonUtil)
+                                           ((35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7B").Sum() / 3)) + 
+                                            parentNode.bluePathVals[1] + 
+                                            parentNode.bluePathVals[2]) * 5 - redPathSum) 
+                                                                                                                                                                                 > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece1[0], _gameState.bluePiece1[1])));
                         boards.Add(mmNode);
                     }
                 }
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece2[0], _gameState.bluePiece2[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece2[0], _gameState.bluePiece2[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece2, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                           (blue1PathVal + (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3)) + blue3PathVal) * 5 - redPathSum)
-                                                                                                                                                                                 > blueComparisonUtil)
+                                           (parentNode.bluePathVals[0] + 
+                                            (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3)) +
+                                            parentNode.bluePathVals[2]) * 5 - redPathSum)
+                                                                                                                                                                                 > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece2[0], _gameState.bluePiece2[1])));
                         boards.Add(mmNode);
                     }
                 }
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece3[0], _gameState.bluePiece3[1], _gameState.availableMoves))
+                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece3[0], _gameState.bluePiece3[1], numMoves))
                 {
                     MinMaxNode mmNode = new MinMaxNode(_gameState);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece3, isBlueTurn);
                     if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                           (blue1PathVal + blue2PathVal + (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3))) * 5 - redPathSum)
-                                                                                                                                                                                 > blueComparisonUtil)
+                                           (parentNode.bluePathVals[0] + 
+                                            parentNode.bluePathVals[1] + 
+                                            (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3))) * 5 - redPathSum)
+                                                                                                                                                                                 > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece3[0], _gameState.bluePiece3[1])));
                         boards.Add(mmNode);
@@ -568,19 +586,28 @@ namespace IS_Project.AI
         public ((int, int), (int, int)) getPlayerPieceDecision(GameBoard _gameState, int depth)
         {
             int highestValue = -1000;
+            int avMovs = _gameState.availableMoves;
             //PlayerPieceBFS movementOptions = new PlayerPieceBFS(_gameState);
             //list contatining the destination and what piece to move there
             ((int, int), (int, int)) bestMove = ((0,0),(0,0));
-            List<MinMaxNode> moveList = generatePlayerPieceMoves(_gameState.availableMoves, true, _gameState);
-
+            List<MinMaxNode> moveList = generatePlayerPieceMoves(_gameState.availableMoves, true, new MinMaxNode(_gameState));
+            if (moveList.Count == 0)
+            {
+                Console.WriteLine("moveList Failure");
+            }
+            
             foreach (MinMaxNode move in moveList)
             {
                 int moveValue = minMaxDecision(move, false, depth);
-                if (moveValue >= highestValue)
+                if (moveValue > highestValue)
                 {
                     highestValue = moveValue;
                     bestMove = move.currentMove.FirstOrDefault();
                 }
+            }
+            if(bestMove == ((0, 0), (0, 0)))
+            {
+                Console.WriteLine("minMaxDec Failure");
             }
 
             return bestMove;
@@ -589,6 +616,7 @@ namespace IS_Project.AI
         //moves the piece under the assumption that the move is valid (only works for player pieces ATM)
         public void botPieceMovement(int xDest, int yDest, GameBoard gamestate, int[] curPiece, bool isBlueTurn = true)
         {
+            botMoveCount++;
             if (curPiece != gamestate.minotuarPos)
             {
                 //bot movement for Player pieces
@@ -601,7 +629,7 @@ namespace IS_Project.AI
                 if (gamestate.gameBoard[xDest, yDest] == "0")
                 {
                     gamestate.gameBoard[xDest, yDest] = (isBlueTurn ? "4B" : "4R");
-                    gamestate.checkPieceWallCollision(xDest, xDest, (curPiece[0], curPiece[1]));
+                    gamestate.checkPieceWallCollision(xDest, yDest, (curPiece[0], curPiece[1]));
                 }
                 curPiece[0] = xDest;
                 curPiece[1] = yDest;
@@ -613,7 +641,7 @@ namespace IS_Project.AI
                 if (!gamestate.minoCollisionCheck(xDest, yDest))
                 {
                     gamestate.gameBoard[xDest, yDest] = "6";
-                    gamestate.checkPieceWallCollision(xDest, xDest, (curPiece[0], curPiece[1]));
+                    gamestate.checkPieceWallCollision(xDest, yDest, (curPiece[0], curPiece[1]));
                     curPiece[0] = xDest;
                     curPiece[1] = yDest;
                 }
