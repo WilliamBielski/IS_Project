@@ -101,6 +101,10 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
+                        if (_gameBoard.selectedPiece == "mino" && _gameBoard.playerBases.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
+                        {
+                            continue;
+                        }
                         Node adjNode = new Node((adjX, adjY));
                         adjNode.next = currentNode;
                         adjNode.depth = currentNode.depth + 1;
@@ -108,6 +112,7 @@ namespace IS_Project.AI
                         queue.Enqueue(adjNode);
 
                         visited.Add((adjX, adjY), currentNode.depth + 1);
+                        
 
                     }
                 }
@@ -125,6 +130,11 @@ namespace IS_Project.AI
                 return pathList;
             }
         }
+
+        //public List<(int, int)> BFSwithException(int row, int col, string objective, Dictionary<string, string> Exceptions)
+        //{
+
+        //}
 
         public List<int> getPathLengths(int row, int col, string objective)
         {
@@ -264,7 +274,7 @@ namespace IS_Project.AI
 
             return pathLengthList;
         }
-        //if given a list of traversed location can find a route that uses none of the same chokepoints
+        //if given a list of traversed locations can find a route that uses none of the same chokepoints
         public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, Dictionary<(int, int), int> dataList)
         {
             // Stores indices of the matrix cells

@@ -13,15 +13,16 @@ using System.Xml.Linq;
 
 namespace IS_Project.AI
 {
-    public class turnBasedAI
+    public class TurnBasedAI
     {
         public GameBoard currentGameBoard;
 
-        public turnBasedAI() { }
-        public turnBasedAI(GameBoard gB)
+        public TurnBasedAI() { }
+        public TurnBasedAI(GameBoard gB)
         {
             currentGameBoard = gB;
         }
+        ///variables used for the tracking of how many times different functions run.
         int minMaxDecCount = 0;
         int getUtilCount = 0;
         int getUtilNoPathsCount = 0;
@@ -35,7 +36,8 @@ namespace IS_Project.AI
 
         public void Update()
         {
-            if (!currentGameBoard.diceRolled)
+            currentGameBoard.boardState = getUtility(currentGameBoard);
+            if (!currentGameBoard.isRedTurn && !currentGameBoard.diceRolled)
             {
                 currentGameBoard.rollDice();
                 if(currentGameBoard.selectedPiece != "")
@@ -47,9 +49,10 @@ namespace IS_Project.AI
                     currentGameBoard.LastBlueMove = currentGameBoard.availableMoves.ToString();
                 }
             }
-            
-            //what to do if the G or B is rolled
-            //logic for rolling a "grey"
+
+            //what to do based on roll  \\//
+
+            /////////////////////////////////////////////logic for rolling a "grey"/////////////////////////////////////////////
             if (currentGameBoard.selectedPiece == "grey")
             {
                 List<((int, int), (int, int))> greyMove = getGreyDecision(currentGameBoard, 1);
@@ -84,7 +87,8 @@ namespace IS_Project.AI
                 //List<int> lengths = movementPath.pTester(currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1], "7B");
                 currentGameBoard.endTurn();
             }
-            //logic for rolling a "black"
+
+            /////////////////////////////////////////////logic for rolling a "black"////////////////////////////////////////////
             else if (currentGameBoard.selectedPiece == "mino")
             {
                 if (!currentGameBoard.isBlackActive)
@@ -93,7 +97,7 @@ namespace IS_Project.AI
                     currentGameBoard.minotuarPos[1] = 12;
                     currentGameBoard.gameBoard[currentGameBoard.minotuarPos[0], currentGameBoard.minotuarPos[1]] = "6";
                     currentGameBoard.isBlackActive = true;
-                    currentGameBoard.availableMoves--;
+                    currentGameBoard.availableMoves = 7;
                 }
                 else if (currentGameBoard.availableMoves > 0)
                 {
@@ -104,11 +108,13 @@ namespace IS_Project.AI
                     //assuming piece selected
                     if (minoPath.Count <= 8)
                     {
-                        botPieceMovement(minoPath.LastOrDefault().Item1, minoPath.LastOrDefault().Item2, currentGameBoard, currentGameBoard.minotuarPos);
+                        botPieceMovement(minoPath.LastOrDefault().Item1, minoPath.LastOrDefault().Item2, currentGameBoard, 6);
                     }
                     else
                     {
-                        botPieceMovement(minoPath[7].Item1, minoPath[7].Item2, currentGameBoard, currentGameBoard.minotuarPos);
+                        botPieceMovement(minoPath[currentGameBoard.availableMoves-1].Item1, 
+                                         minoPath[currentGameBoard.availableMoves - 1].Item2, 
+                                         currentGameBoard, 6);
                     }
                     
                     currentGameBoard.availableMoves = 0;
@@ -117,32 +123,34 @@ namespace IS_Project.AI
                 else
                 {
                     currentGameBoard.endTurn();
-                    currentGameBoard.availableMoves = getUtility(currentGameBoard);
                 }
             }
-            //logic for moving game player piece
+
+            /////////////////////////////////////////////logic for moving game player piece ///////////////////////////////////
             else
             {
+                //might not need extra if-statment
                 if (currentGameBoard.selectedPiece == "")
                 {
-                    ((int, int),(int, int)) playerPieceMove = getPlayerPieceDecision(currentGameBoard, 2);
+                    ((int, int),(int, int)) playerPieceMove = getPlayerPieceDecision(currentGameBoard, 1);
+                    //error catcher (will be removed)/////////////////////////////////////////////////////////////////////////////////
                     if (playerPieceMove == ((0,0),(0,0)))
                     {
                         Console.WriteLine("move fail");
                     }
+                    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     if (playerPieceMove.Item2 == (currentGameBoard.bluePiece1[0], currentGameBoard.bluePiece1[1]))
                     {
-                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, currentGameBoard.bluePiece1, true);
+                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, 1, true);
                     }
                     else if (playerPieceMove.Item2 == (currentGameBoard.bluePiece2[0], currentGameBoard.bluePiece2[1]))
                     {
-                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, currentGameBoard.bluePiece2, true);
+                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, 2, true);
                     }
                     else if (playerPieceMove.Item2 == (currentGameBoard.bluePiece3[0], currentGameBoard.bluePiece3[1]))
                     {
-                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, currentGameBoard.bluePiece3, true);
+                        botPieceMovement(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2, currentGameBoard, 3, true);
                     }
-                    //currentGameBoard.movePieceByClick(playerPieceMove.Item1.Item1, playerPieceMove.Item1.Item2);
                     currentGameBoard.endTurn();
                 }
                 else
@@ -351,11 +359,11 @@ namespace IS_Project.AI
 
             if (_path.Count <= 8)
             {
-                botPieceMovement(_path.LastOrDefault().Item1, _path.LastOrDefault().Item2, minoMinmaxNode.minmaxGameboard, minoMinmaxNode.minmaxGameboard.minotuarPos);
+                botPieceMovement(_path.LastOrDefault().Item1, _path.LastOrDefault().Item2, minoMinmaxNode.minmaxGameboard, 6);
             }
             else
             {
-                botPieceMovement(_path[7].Item1, _path[7].Item2, minoMinmaxNode.minmaxGameboard, minoMinmaxNode.minmaxGameboard.minotuarPos);
+                botPieceMovement(_path[7].Item1, _path[7].Item2, minoMinmaxNode.minmaxGameboard, 6);
             }
             minmaxNode.children.Add(minoMinmaxNode);
 
@@ -456,22 +464,38 @@ namespace IS_Project.AI
                 parentNode.bluePathVals[1] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3));
                 parentNode.bluePathVals[2] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3));
             }
-            int redPathSum = (parentNode.bluePathVals.Sum()) * 5;
+            int redPathSum = (parentNode.redPathVals.Sum()) * 5;
             int bluePathSum = (parentNode.bluePathVals.Sum()) * 5;
 
             _gameState.availableMoves = numMoves;
-            int comparisonUtil = getUtility(_gameState) + (isBlueTurn ? -150 : 150);
+            int utilComparison = getUtilitySansPaths(_gameState, bluePathSum - redPathSum) + (isBlueTurn ? -150 : 150);
             if (!isBlueTurn)
             {
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece1[0], _gameState.redPiece1[1], numMoves))
+                List<int[]> pieceList = new List<int[]>()
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
+                    _gameState.redPiece1, _gameState.redPiece2, _gameState.redPiece3
+                };
+
+                for (int i = 0; i < 3; i++)
+                {
+                    foreach ((int, int) destination in playerMovement.getSpecificDistBFS(pieceList[i][0], pieceList[i][1], numMoves))
+                    {
+                        MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
+                        botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, i+1, isBlueTurn);
+                        mmNode.redPathVals[i] = (35 - (playerMovement.getPathLengths(pieceList[i][0], pieceList[i][1], "7R").Sum() / 3));
+                        if (getUtilitySansPaths(mmNode.minmaxGameboard, (bluePathSum - mmNode.redPathVals.Sum() * 5)) < utilComparison)
+                        {
+                            mmNode.currentMove.Add((destination, (pieceList[i][0], pieceList[i][1])));
+                            boards.Add(mmNode);
+                        }
+                    }
+                }
+                /*foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece1[0], _gameState.redPiece1[1], numMoves))
+                {
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                            bluePathSum - ((35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3)) + 
-                                                           parentNode.redPathVals[1] + 
-                                                           parentNode.redPathVals[2] )*5) 
-                                                                                                                                                                               < comparisonUtil)
+                    mmNode.redPathVals[0] = (35 - (playerMovement.getPathLengths(_gameState.redPiece1[0], _gameState.redPiece1[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (bluePathSum - mmNode.redPathVals.Sum()*5)) < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece1[0], _gameState.redPiece1[1])));
                         boards.Add(mmNode);
@@ -479,13 +503,10 @@ namespace IS_Project.AI
                 }
                 foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece2[0], _gameState.redPiece2[1], numMoves))
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
-                    botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                            bluePathSum - (parentNode.redPathVals[0] + 
-                                                           (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3)) + 
-                                                           parentNode.redPathVals[2]) * 5) 
-                                                                                                                                                                                < comparisonUtil)
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
+                    botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece2, isBlueTurn);
+                    mmNode.redPathVals[1] = (35 - (playerMovement.getPathLengths(_gameState.redPiece2[0], _gameState.redPiece2[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (bluePathSum - mmNode.redPathVals.Sum() * 5)) < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece2[0], _gameState.redPiece2[1])));
                         boards.Add(mmNode);
@@ -493,31 +514,45 @@ namespace IS_Project.AI
                 }
                 foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.redPiece3[0], _gameState.redPiece3[1], numMoves))
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
-                    botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece1, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                            bluePathSum - (parentNode.redPathVals[0] + 
-                                                           parentNode.redPathVals[1] + 
-                                                           (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3))) * 5)
-                                                                                                                                                                                < comparisonUtil)
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
+                    botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.redPiece3, isBlueTurn);
+                    mmNode.redPathVals[2] = (35 - (playerMovement.getPathLengths(_gameState.redPiece3[0], _gameState.redPiece3[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (bluePathSum - mmNode.redPathVals.Sum() * 5)) < comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.redPiece3[0], _gameState.redPiece3[1])));
                         boards.Add(mmNode);
                     }
-                }
+                }*/
             }
 
             else if (isBlueTurn)
             {
-                foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece1[0], _gameState.bluePiece1[1], numMoves))
+                List<int[]> pieceList = new List<int[]>()
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
+                    _gameState.bluePiece1, _gameState.bluePiece2, _gameState.bluePiece3
+                };
+
+                for (int i = 0; i < 3; i++)
+                {
+                    foreach ((int, int) destination in playerMovement.getSpecificDistBFS(pieceList[i][0], pieceList[i][1], numMoves))
+                    {
+                        MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
+                        botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, i+1, isBlueTurn);
+                        mmNode.bluePathVals[i] = (35 - (playerMovement.getPathLengths(pieceList[i][0], pieceList[i][1], "7R").Sum() / 3));
+                        if (getUtilitySansPaths(mmNode.minmaxGameboard, (mmNode.bluePathVals.Sum() * 5) - redPathSum) > utilComparison)
+                        { 
+                            mmNode.currentMove.Add((destination, (pieceList[i][0], pieceList[i][1])));
+                            boards.Add(mmNode);
+                        }
+                    }
+                }
+
+                /*foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece1[0], _gameState.bluePiece1[1], numMoves))
+                {
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece1, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard, 
-                                           ((35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7B").Sum() / 3)) + 
-                                            parentNode.bluePathVals[1] + 
-                                            parentNode.bluePathVals[2]) * 5 - redPathSum) 
-                                                                                                                                                                                 > comparisonUtil)
+                    mmNode.bluePathVals[0] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece1[0], _gameState.bluePiece1[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (mmNode.bluePathVals.Sum() * 5) - redPathSum) > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece1[0], _gameState.bluePiece1[1])));
                         boards.Add(mmNode);
@@ -525,13 +560,10 @@ namespace IS_Project.AI
                 }
                 foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece2[0], _gameState.bluePiece2[1], numMoves))
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece2, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                           (parentNode.bluePathVals[0] + 
-                                            (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7B").Sum() / 3)) +
-                                            parentNode.bluePathVals[2]) * 5 - redPathSum)
-                                                                                                                                                                                 > comparisonUtil)
+                    mmNode.bluePathVals[1] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece2[0], _gameState.bluePiece2[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (mmNode.bluePathVals.Sum() * 5) - redPathSum) > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece2[0], _gameState.bluePiece2[1])));
                         boards.Add(mmNode);
@@ -539,19 +571,15 @@ namespace IS_Project.AI
                 }
                 foreach ((int, int) destination in playerMovement.getSpecificDistBFS(_gameState.bluePiece3[0], _gameState.bluePiece3[1], numMoves))
                 {
-                    MinMaxNode mmNode = new MinMaxNode(_gameState);
+                    MinMaxNode mmNode = new MinMaxNode(_gameState, parentNode.bluePathVals, parentNode.redPathVals);
                     botPieceMovement(destination.Item1, destination.Item2, mmNode.minmaxGameboard, mmNode.minmaxGameboard.bluePiece3, isBlueTurn);
-                    if (getUtilitySansPaths(mmNode.minmaxGameboard,
-                                           (parentNode.bluePathVals[0] + 
-                                            parentNode.bluePathVals[1] + 
-                                            (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7B").Sum() / 3))) * 5 - redPathSum)
-                                                                                                                                                                                 > comparisonUtil)
+                    mmNode.bluePathVals[2] = (35 - (playerMovement.getPathLengths(_gameState.bluePiece3[0], _gameState.bluePiece3[1], "7R").Sum() / 3));
+                    if (getUtilitySansPaths(mmNode.minmaxGameboard, (mmNode.bluePathVals.Sum() * 5) - redPathSum) > comparisonUtil)
                     {
                         mmNode.currentMove.Add((destination, (_gameState.bluePiece3[0], _gameState.bluePiece3[1])));
                         boards.Add(mmNode);
                     }
-                }
-
+                }*/
             }
             _gameState.availableMoves = 0;
             return boards;
@@ -565,8 +593,6 @@ namespace IS_Project.AI
             int highestValue = -1000;
             List<MinMaxNode> moveList = generateGreyMoves(_gameState, true);
 
-            //tester to track number of moves left to check
-            int cep = moveList.Count;
             foreach(MinMaxNode openingMove in moveList)
             {
                 //since wall move will always be short term
@@ -576,7 +602,6 @@ namespace IS_Project.AI
                     highestValue = moveValue;
                     bestMove = openingMove.currentMove;
                 }
-                cep--;
             }
 
             return bestMove;
@@ -591,6 +616,7 @@ namespace IS_Project.AI
             //list contatining the destination and what piece to move there
             ((int, int), (int, int)) bestMove = ((0,0),(0,0));
             List<MinMaxNode> moveList = generatePlayerPieceMoves(_gameState.availableMoves, true, new MinMaxNode(_gameState));
+            _gameState.availableMoves = 0;
             if (moveList.Count == 0)
             {
                 Console.WriteLine("moveList Failure");
@@ -614,9 +640,29 @@ namespace IS_Project.AI
         }
 
         //moves the piece under the assumption that the move is valid (only works for player pieces ATM)
-        public void botPieceMovement(int xDest, int yDest, GameBoard gamestate, int[] curPiece, bool isBlueTurn = true)
+        public void botPieceMovement(int xDest, int yDest, GameBoard gamestate, int pieceNum, bool isBlueTurn = true)
         {
             botMoveCount++;
+            int[] curPiece = new int[2];
+            switch (pieceNum)
+            {
+                case 1:
+                    curPiece = isBlueTurn ? gamestate.bluePiece1 : gamestate.redPiece1;
+                    break;
+
+                case 2:
+                    curPiece = isBlueTurn ? gamestate.bluePiece2 : gamestate.redPiece2;
+                    break;
+
+                case 3:
+                    curPiece = isBlueTurn ? gamestate.bluePiece3 : gamestate.redPiece3;
+                    break;
+
+                case 6:
+                    curPiece = gamestate.minotuarPos;
+                    break;
+            }
+
             if (curPiece != gamestate.minotuarPos)
             {
                 //bot movement for Player pieces

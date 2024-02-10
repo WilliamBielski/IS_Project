@@ -22,9 +22,9 @@ namespace IS_Project.Models
         public bool diceRolled = false;
         int heldKey = 0;
 
-        public int[] redPiece1 = { 1, 0 };
-        public int[] redPiece2 = { 0, 0 };
-        public int[] redPiece3 = { 0, 1 };
+        public int[] redPiece1 = { 6, 1 };
+        public int[] redPiece2 = { 5, 4 };
+        public int[] redPiece3 = { 4, 4 };
 
         public int[] bluePiece1 = { 29, 28 };
         public int[] bluePiece2 = { 29, 29 };
@@ -38,9 +38,9 @@ namespace IS_Project.Models
                                         { "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"},
                                         { "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "3W", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "3W", "0", "0"},
-                                        { "0", "0", "3E", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
-                                        { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
-                                        { "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0"},
+                                        { "0", "0", "3E", "0", "4R", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
+                                        { "0", "0", "0", "0", "4R", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
+                                        { "0", "4R", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "0", "0"},
                                         { "0", "0", "0", "0", "0", "1", "0", "0", "3N", "3S", "0", "0", "1", "1", "0", "0", "1", "1", "0", "0", "3N", "3S", "0", "0", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
@@ -151,26 +151,6 @@ namespace IS_Project.Models
             { ((21, 20), (21, 21)), ((21, 20), (21, 21)) },
             { ((3, 27), (4, 27)), ((3, 27), (4, 27)) },
             { ((25, 27), (26, 27)), ((25, 27), (26, 27)) },
-        };
-
-        public Dictionary<string, int> impassableList = new Dictionary<string, int>()
-        {
-            { "1" , 1 }, { "3N", 3 }, { "3S", 3 }, { "3E", 3 }, { "3W", 3 }, { "T", 8 }
-        };
-        public string[] passable = { "0", "4R", "4B" };
-        public string[] playerBases = { "5R", "5B", "7R", "7B" };
-
-        public Dictionary<(int, int), int> redVictoryTiles = new Dictionary<(int, int), int>()
-        {
-            { (13, 13), 1 }, 
-            { (13, 14), 2 }, 
-            { (14, 13), 3 },
-        };
-        public Dictionary<(int, int), int> blueVictoryTiles = new Dictionary<(int, int), int>()
-        {
-            { ( 15, 16 ), 1 },
-            { (16,16), 2 },
-            { (16,15), 3 },
         };
 
         public bool isRedTurn = true;
@@ -409,14 +389,55 @@ namespace IS_Project.Models
             }
 
             //general victory conditions
-            if (redVictoryTiles.ContainsKey((redPiece1[0], redPiece1[0])) && redVictoryTiles.ContainsKey((redPiece2[0], redPiece2[0])) && redVictoryTiles.ContainsKey((redPiece3[0], redPiece3[0])))
+            //for basic demo number of pieces needed to finish reduced to 1
+            if (redVictoryTiles.ContainsKey((redPiece1[0], redPiece1[1])) || redVictoryTiles.ContainsKey((redPiece2[0], redPiece2[1])) || redVictoryTiles.ContainsKey((redPiece3[0], redPiece3[1])))
             {
                 redVictory = true;
             }
-            else if (blueVictoryTiles.ContainsKey((bluePiece1[0], bluePiece1[0])) && blueVictoryTiles.ContainsKey((bluePiece2[0], bluePiece2[0])) && blueVictoryTiles.ContainsKey((bluePiece3[0], bluePiece3[0])))
+            else if (blueVictoryTiles.ContainsKey((bluePiece1[0], bluePiece1[1])) || blueVictoryTiles.ContainsKey((bluePiece2[0], bluePiece2[1])) || blueVictoryTiles.ContainsKey((bluePiece3[0], bluePiece3[1])))
             {
                 blueVictory = true;
             }
+            /*
+            int vicTotal = 0;
+            if (!isRedTurn)
+            {
+                if (redVictoryTiles.ContainsKey((redPiece1[0], redPiece1[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (redVictoryTiles.ContainsKey((redPiece2[0], redPiece2[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (redVictoryTiles.ContainsKey((redPiece3[0], redPiece3[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (vicTotal > 1)
+                {
+                    redVictory = true;
+                }
+            }
+            else
+            {
+                if (blueVictoryTiles.ContainsKey((bluePiece1[0], bluePiece1[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (blueVictoryTiles.ContainsKey((bluePiece2[0], bluePiece2[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (blueVictoryTiles.ContainsKey((bluePiece3[0], bluePiece3[1])))
+                {
+                    vicTotal += 1;
+                }
+                if (vicTotal > 1)
+                {
+                    blueVictory = true;
+                }
+            }*/
 
         }
 
@@ -505,6 +526,9 @@ namespace IS_Project.Models
             Globals.SpriteBatch.DrawString(basicFont, "blue3: {" + bluePiece3[0] + "," + bluePiece3[1] + "}", new Vector2(1488, 800), Color.Black);
             Globals.SpriteBatch.DrawString(basicFont, "last blue move: "+ LastBlueMove, new Vector2(1488, 840), Color.Black);
             Globals.SpriteBatch.DrawString(basicFont, "boardState: " + boardState, new Vector2(1488, 900), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 960), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 990), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1020), redVictory ? Color.Red : Color.Blue);
 
             Globals.SpriteBatch.Draw(minotaur, minotuarPos[0] > 0 ? new Vector2(minotuarPos[0] * tileSize, minotuarPos[1] * tileSize) : 
                                                                     new Vector2((float)(14.5 * tileSize), (float)(14.5 * tileSize)), Color.White);
@@ -529,19 +553,19 @@ namespace IS_Project.Models
                 //    availableMoves = 8;
                 //    break;
 
-                case 1:
-                    availableMoves = 3;
-                    break;
-
                 //case 1:
-                //case 3:
-                //case 4:
-                //case 5:
-                //case 6:
-                //case 2:
-                //    selectedPiece = "grey";
-                //    isGreyActive = true;
+                //    availableMoves = 3;
                 //    break;
+
+                case 1:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 2:
+                    selectedPiece = "grey";
+                    isGreyActive = true;
+                    break;
 
                 default:
                     availableMoves = num;
@@ -839,7 +863,7 @@ namespace IS_Project.Models
                     else
                     {
                         gameBoard[curPiece[0], curPiece[1]] = "0";
-                        if (selectedPiece.Contains('r') && gameBoard[curPiece[0], curPiece[1]] == "7R")
+                        if (selectedPiece.Contains('r') && gameBoard[xDest, yDest] == "7R")
                         {
                             availableMoves = 0;
                         }

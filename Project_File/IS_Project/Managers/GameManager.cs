@@ -11,12 +11,12 @@ namespace IS_Project.Managers
     public class GameManager
     {
         private GameBoard _gameBoard;
-        private turnBasedAI _turnBasedAI;
+        private TurnBasedAI _turnBasedAI;
 
         public GameManager()
         {
             _gameBoard = new GameBoard();
-            _turnBasedAI = new turnBasedAI()
+            _turnBasedAI = new TurnBasedAI()
             {
                 currentGameBoard = _gameBoard
             };
@@ -24,13 +24,16 @@ namespace IS_Project.Managers
 
         public void Update()
         {
-            if (!_gameBoard.isRedTurn)
+            if (!(_gameBoard.redVictory || _gameBoard.blueVictory))
             {
-                _turnBasedAI.Update();
-            }
-            else
-            {
-                _gameBoard.Update();
+                if (!_gameBoard.isRedTurn)
+                {
+                    _turnBasedAI.Update();
+                }
+                else
+                {
+                    _gameBoard.Update();
+                }
             }
         }
         public void Draw()

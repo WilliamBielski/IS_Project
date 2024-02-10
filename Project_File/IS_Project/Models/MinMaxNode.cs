@@ -22,5 +22,14 @@ namespace IS_Project.Models
             bluePathVals = new List<int>() { 0, 0, 0};
             redPathVals = new List<int>() { 0, 0, 0};
         }
+
+        public MinMaxNode(GameBoard gameState, List<int> bluePaths, List<int> redPaths)
+        {
+            children = new List<MinMaxNode>();
+            minmaxGameboard = (GameBoard)gameState.deepCopy();
+            currentMove = new List<((int, int), (int, int))>();
+            bluePathVals = new List<int>() { bluePaths[0], bluePaths[1], bluePaths[2] };
+            redPathVals = new List<int>() { redPaths[0], redPaths[1], redPaths[2] };
+        }
     }
 }

@@ -233,6 +233,29 @@ namespace IS_Project.Models
             { (22, 29), ((22, 28), (22, 29)) },
         };
 
+        public Dictionary<string, int> impassableList = new Dictionary<string, int>()
+        {
+            { "1" , 1 }, { "3N", 3 }, { "3S", 3 }, { "3E", 3 }, { "3W", 3 }, { "6", 6 }, { "T", 8 }
+        };
+        public List<string> passable = new List<string>() { "0", "4R", "4B" };
+        public Dictionary<string, string> playerBases = new Dictionary<string, string>() 
+        { 
+            { "5R","5R" }, { "5B","5B" }, { "7R","7R" }, { "7B","7B" } 
+        };
+
+        public Dictionary<(int, int), int> redVictoryTiles = new Dictionary<(int, int), int>()
+        {
+            { (13, 13), 1 },
+            { (13, 14), 2 },
+            { (14, 13), 3 },
+        };
+        public Dictionary<(int, int), int> blueVictoryTiles = new Dictionary<(int, int), int>()
+        {
+            { (15,16), 1 },
+            { (16,16), 2 },
+            { (16,15), 3 },
+        };
+
         public List<((int, int), (int, int))> baseChokepointbackup = new List<((int, int), (int, int))>()
         {
             ((7, 0),(7, 1)), ((11, 0),(11, 1)), ((13, 0),(13, 1)), ((16, 0),(16, 1)), ((18, 0),(18, 1)), ((22, 0),(22, 1)),
