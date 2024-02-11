@@ -48,14 +48,14 @@ namespace IS_Project.AI
         }
 
         // Function to perform the BFS traversal, returns linked list of directions for shorted path.
-        public bfsRespose BFS(int row, int col, string objective)
+        public List<(int, int)> BFS(int row, int col, string objective)
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
             Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
 
             //linked thing for later
-            bfsRespose pathList = new bfsRespose();
+            List<(int, int)> pathList = new List<(int, int)>();
             Node currentNode;
 
             // Mark the starting cell as visited
@@ -82,8 +82,7 @@ namespace IS_Project.AI
                 {
                     while (currentNode.next != null)
                     {
-                        pathList.dataList.Insert(0, currentNode.data);
-                        pathList.nodeList.Insert(0, currentNode);
+                        pathList.Insert(0, currentNode.data);
                         currentNode = currentNode.next;
                     }
 
@@ -131,28 +130,23 @@ namespace IS_Project.AI
             }
         }
 
-        //public List<(int, int)> BFSwithException(int row, int col, string objective, Dictionary<string, string> Exceptions)
-        //{
-
-        //}
-
         public List<int> getPathLengths(int row, int col, string objective)
         {
             List<int> pathLengthList = new List<int>();
             Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
 
             //includes destination at this point
-            bfsRespose fastestPath = BFS(row, col, objective);
-            if (fastestPath.dataList.Count != 0)
+            List<(int, int)> fastestPath = BFS(row, col, objective);
+            if (fastestPath.Count != 0)
             {
-                pathLengthList.Add(fastestPath.dataList.Count);
+                pathLengthList.Add(fastestPath.Count);
             }
             else
             {
                 pathLengthList.Add(55);
             }
 
-            foreach(var cord in  fastestPath.dataList)
+            foreach(var cord in  fastestPath)
             {
                 if (!traveledList.ContainsKey(cord))
                 {
@@ -205,23 +199,23 @@ namespace IS_Project.AI
 
             return pathLengthList;
         }
-        public List<int> getPathLengthsMinusFirst(int row, int col, string objective, bfsRespose fastestRoute)
+        public List<int> getPathLengthsMinusFirst(int row, int col, string objective, List<(int, int)> fastestRoute)
         {
             List<int> pathLengthList = new List<int>();
             Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
 
             //includes destination at this point
-            bfsRespose fastestPath = fastestRoute;
-            if (fastestPath.dataList.Count != 0)
+            List<(int, int)> fastestPath = fastestRoute;
+            if (fastestPath.Count != 0)
             {
-                pathLengthList.Add(fastestPath.dataList.Count);
+                pathLengthList.Add(fastestPath.Count);
             }
             else
             {
                 pathLengthList.Add(55);
             }
 
-            foreach (var cord in fastestPath.dataList)
+            foreach (var cord in fastestPath)
             {
                 if (!traveledList.ContainsKey(cord))
                 {
@@ -379,7 +373,7 @@ namespace IS_Project.AI
 
         //method gets the fastest path for 1 of a given sides pieces then 
         //slightly more efficient method for determining distance to center (vs 3 BFS's)? (roughly 2.75 BFS's)
-        //not efficient enough-----------------------------------------------------------------------------
+        /*not efficient enough-----------------------------------------------------------------------------
         public List<(int, Dictionary<(int, int), (int,int)>)> getFastestPlayerPiecePathsLengths(GameBoard gamestate, bool isBlueTurn)
         {
             //method first gets 
@@ -651,7 +645,7 @@ namespace IS_Project.AI
             }
             return pathLengths;
         }
-
+        */
         //returns all reachable locations for a given distance
         public List<(int, int)> getSpecificDistBFS(int row, int col, int dist)
         {
@@ -960,7 +954,7 @@ namespace IS_Project.AI
                     currentNode = queue.Dequeue();
 
                     //if current node == objective or part of a cleared path, add it to clearedPieceList
-                    if (clearedPathsList.ContainsKey((x, y)) || _gameBoard.gameBoard[x, y] == objective)
+                    if (clearedPathsList.ContainsKey((x, y)) || gamestate.gameBoard[x, y] == objective)
                     {
                         break;
                     }
@@ -974,8 +968,8 @@ namespace IS_Project.AI
 
                         if (isValid(adjX, adjY, visited))
                         {
-                            if (_gameBoard.gameBoard[adjX, adjY] == "0" || isBlueTurn ? _gameBoard.gameBoard[adjX, adjY].Contains('R') :
-                                                                                        _gameBoard.gameBoard[adjX, adjY].Contains('B'))
+                            if (gamestate.gameBoard[adjX, adjY] == "0" || (isBlueTurn ? gamestate.gameBoard[adjX, adjY].Contains('R') :
+                                                                                        gamestate.gameBoard[adjX, adjY].Contains('B')))
                             {
                                 Node adjNode = new Node((adjX, adjY));
                                 adjNode.next = currentNode;
@@ -1012,10 +1006,10 @@ namespace IS_Project.AI
             Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();
 
             //includes destination at this point
-            bfsRespose fastestPath = BFS(row, col, objective);
-            if (fastestPath.dataList.Count != 0)
+            List<(int, int)> fastestPath = BFS(row, col, objective);
+            if (fastestPath.Count != 0)
             {
-                pathLengthList.Add(fastestPath.dataList.Count);
+                pathLengthList.Add(fastestPath.Count);
             }
             else
             {
@@ -1024,7 +1018,7 @@ namespace IS_Project.AI
 
             //for testing
 
-            foreach (var cord in fastestPath.dataList)
+            foreach (var cord in fastestPath)
             {
                 if (!traveledList.ContainsKey(cord))
                 {
@@ -1062,7 +1056,7 @@ namespace IS_Project.AI
 
 
             //tester
-            foreach ((int, int) item in fastestPath.dataList)
+            foreach ((int, int) item in fastestPath)
             {
                 _gameBoard.gameBoard[item.Item1, item.Item2] = objective;
             }

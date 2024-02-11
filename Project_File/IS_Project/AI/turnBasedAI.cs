@@ -103,7 +103,7 @@ namespace IS_Project.AI
                 {
                     BoardSearch movementPath = new BoardSearch(currentGameBoard);
 
-                    List<(int, int)> minoPath = movementPath.BFS(currentGameBoard.minotuarPos[0], currentGameBoard.minotuarPos[1], "4R").dataList;
+                    List<(int, int)> minoPath = movementPath.BFS(currentGameBoard.minotuarPos[0], currentGameBoard.minotuarPos[1], "4R");
 
                     //assuming piece selected
                     if (minoPath.Count <= 8)
@@ -203,9 +203,9 @@ namespace IS_Project.AI
             getUtilCount++;
             BoardSearch pieceProximity = new BoardSearch(gameState);
             //proximity of all pieces to center (30 moves?)(minimum number of moves)
-            (int, List<bfsRespose>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
+            (int, List<List<(int, int)>>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
 
-            (int, List<bfsRespose>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
+            (int, List<List<(int, int)>>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
 
             //player pieces within 8 of minotaur
             //[0] = number of red pieces in minotaur range
@@ -229,9 +229,9 @@ namespace IS_Project.AI
             getUtilNoPathsCount++;
             BoardSearch pieceProximity = new BoardSearch(gameState);
             //proximity of all pieces to center (30 moves?)(minimum number of moves)
-            (int, List<bfsRespose>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
+            (int, List<List<(int, int)>>) redDistanceToCenter = getDistanceToCenterValue(false, gameState, pieceProximity);
 
-            (int, List<bfsRespose>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
+            (int, List<List<(int, int)>>) blueDistanceToCenter = getDistanceToCenterValue(true, gameState, pieceProximity);
 
             //player pieces within 8 of minotaur
             //[0] = number of red pieces in minotaur range
@@ -246,12 +246,12 @@ namespace IS_Project.AI
             return utility;
         }
 
-        public (int, List<bfsRespose>) getDistanceToCenterValue(bool isBlueTurn, GameBoard gamestate, BoardSearch ppBFS)
+        public (int, List<List<(int, int)>>) getDistanceToCenterValue(bool isBlueTurn, GameBoard gamestate, BoardSearch ppBFS)
         {
             getDistToCenterCount++;
             //List <(int, Dictionary<(int, int), (int, int)>)> PathsAndDistances = ppBFS.getFastestPlayerPiecePathsLengths(gamestate, isBlueTurn);
             //List<Dictionary<(int, int), (int, int)>> piecePaths = new List<Dictionary<(int, int), (int, int)>>();
-            List<bfsRespose> piecePaths = new List<bfsRespose>();
+            List<List<(int, int)>> piecePaths = new List<List<(int, int)>>();
             List<int[]> pieceList;
             string objective;
             if (!isBlueTurn)
@@ -267,15 +267,15 @@ namespace IS_Project.AI
             int sum = 0;
             foreach (int[] piece in pieceList)
             {
-                bfsRespose piecePath = ppBFS.BFS(piece[0], piece[1], objective);
+                List<(int, int)> piecePath = ppBFS.BFS(piece[0], piece[1], objective);
                 if (gamestate.gameBoard[piece[0], piece[1]] == objective)
                 {
                     sum += 70;
                 }
-                else if(piecePath.dataList.Count > 0)
+                else if(piecePath.Count > 0)
                 {
-                    sum += 35 - piecePath.dataList.Count;
-                }else if(piecePath.dataList.Count == 0 && gamestate.gameBoard[piece[0], piece[1]] != objective)
+                    sum += 35 - piecePath.Count;
+                }else if(piecePath.Count == 0 && gamestate.gameBoard[piece[0], piece[1]] != objective)
                 {
                     sum -= 250;
                 }
@@ -300,7 +300,7 @@ namespace IS_Project.AI
             }
         }*/
 
-        public int getPathLengthValue(GameBoard gamestate, BoardSearch pathOptions, List<bfsRespose> BlueFastPaths, List<bfsRespose> RedFastPaths)
+        public int getPathLengthValue(GameBoard gamestate, BoardSearch pathOptions, List<List<(int, int)>> BlueFastPaths, List<List<(int, int)>> RedFastPaths)
         {
             getAllPathLengthsCount++;
             ////Can just pass the first route (fastest from the dist to center method!!!!!!\\\///
@@ -355,7 +355,7 @@ namespace IS_Project.AI
                 minoMinmaxNode.minmaxGameboard.minotuarPos[0] = startPos;
                 minoMinmaxNode.minmaxGameboard.minotuarPos[1] = startPos;
             }
-            _path = possibleMovesPath.BFS(minoMinmaxNode.minmaxGameboard.minotuarPos[0], minoMinmaxNode.minmaxGameboard.minotuarPos[1], isBlueTurn ? "4R" : "4B").dataList;
+            _path = possibleMovesPath.BFS(minoMinmaxNode.minmaxGameboard.minotuarPos[0], minoMinmaxNode.minmaxGameboard.minotuarPos[1], isBlueTurn ? "4R" : "4B");
 
             if (_path.Count <= 8)
             {

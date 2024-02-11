@@ -10,7 +10,6 @@ namespace IS_Project.Models
     {
         public List<(int, int)> dataList;
         public List<Node> nodeList;
-
         public bfsRespose()
         {
             dataList = new List<(int, int)>();
