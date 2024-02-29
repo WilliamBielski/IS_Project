@@ -24,22 +24,22 @@ namespace IS_Project.Models
 
         public int[] redPiece1 = { 1, 0 };
         public int[] redPiece2 = { 0, 0 };
-        public int[] redPiece3 = { 0, 1 };
+        public int[] redPiece3 = { 0, 15 };
 
         public int[] bluePiece1 = { 29, 28 };
         public int[] bluePiece2 = { 29, 29 };
         public int[] bluePiece3 = { 28, 29 };
 
-        public int[] minotuarPos = { -5, -5 };
+        public int[] minotuarPos = { 5, 14 };
 
         public int[,] selectedWall = { { -2, -2 }, { -2, -2 } };
 
-        public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
+        public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "4R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
                                         { "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"},
                                         { "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "3W", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "3W", "0", "0"},
                                         { "0", "0", "3E", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
-                                        { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
+                                        { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "6", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
                                         { "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "0", "0"},
                                         { "0", "0", "0", "0", "0", "1", "0", "0", "3N", "3S", "0", "0", "1", "1", "0", "0", "1", "1", "0", "0", "3N", "3S", "0", "0", "1", "0", "0", "0", "0", "0"},
@@ -158,7 +158,7 @@ namespace IS_Project.Models
         public bool blueVictory = false;
 
         public bool isGreyActive = false;
-        public bool isBlackActive = false;
+        public bool isBlackActive = true;
         public bool addWallActive = false;
 
         public string selectedPiece = "";
@@ -248,7 +248,7 @@ namespace IS_Project.Models
                 }
 
                 //if a wall is selected (implying isGreyActive is true) and the user clicks to move
-                else if (selectedWall[0, 0] != -2 && gameBoard[mPosX, mPosY] == "0" && (mPosX < 30 && mPosX >= 0 && mPosY < 30 && mPosY >= 0))
+                else if (selectedWall[0, 0] != -2 && (mPosX < 30 && mPosX >= 0 && mPosY < 30 && mPosY >= 0) && gameBoard[mPosX, mPosY] == "0")
                 {
                     moveWallByClick(mPosX, mPosY);
                 }
@@ -521,16 +521,18 @@ namespace IS_Project.Models
             Globals.SpriteBatch.DrawString(basicFont, "isGreyActive:" + isGreyActive, new Vector2(1488, 540), Color.Black);
             Globals.SpriteBatch.DrawString(basicFont, "addWallActive:" + addWallActive, new Vector2(1488, 680), Color.Black);
 
-            Globals.SpriteBatch.DrawString(basicFont, "blue1: {" + bluePiece1[0] + "," + bluePiece1[1] + "}", new Vector2(1488, 720), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, "blue2: {" + bluePiece2[0] + "," + bluePiece2[1] + "}", new Vector2(1488, 760), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, "blue3: {" + bluePiece3[0] + "," + bluePiece3[1] + "}", new Vector2(1488, 800), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, "last blue move: "+ LastBlueMove, new Vector2(1488, 840), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, "boardState: " + boardState, new Vector2(1488, 900), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 960), redVictory ? Color.Red : Color.Blue);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 990), redVictory ? Color.Red : Color.Blue);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1020), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, "Minotaur: {" + minotuarPos[0] + "," + minotuarPos[1] + "}", new Vector2(1488, 720), Color.Black);
 
-            Globals.SpriteBatch.Draw(minotaur, minotuarPos[0] > 0 ? new Vector2(minotuarPos[0] * tileSize, minotuarPos[1] * tileSize) : 
+            Globals.SpriteBatch.DrawString(basicFont, "blue1: {" + bluePiece1[0] + "," + bluePiece1[1] + "}", new Vector2(1488, 760), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, "blue2: {" + bluePiece2[0] + "," + bluePiece2[1] + "}", new Vector2(1488, 800), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, "blue3: {" + bluePiece3[0] + "," + bluePiece3[1] + "}", new Vector2(1488, 840), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, "last blue move: "+ LastBlueMove, new Vector2(1488, 880), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, "boardState: " + boardState, new Vector2(1488, 920), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 980), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1010), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1040), redVictory ? Color.Red : Color.Blue);
+
+            Globals.SpriteBatch.Draw(minotaur, minotuarPos[0] >= 0 ? new Vector2(minotuarPos[0] * tileSize, minotuarPos[1] * tileSize) : 
                                                                     new Vector2((float)(14.5 * tileSize), (float)(14.5 * tileSize)), Color.White);
 
         }
@@ -548,24 +550,24 @@ namespace IS_Project.Models
                 //case 4:
                 //case 5:
                 //case 6:
-                case 1:
-                    selectedPiece = "mino";
-                    availableMoves = 8;
-                    break;
-
                 //case 1:
-                //    availableMoves = 3;
+                //    selectedPiece = "mino";
+                //    availableMoves = 8;
                 //    break;
+
+                case 1:
+                    availableMoves = 3;
+                    break;
 
                 //case 1:
                 //case 3:
                 //case 4:
                 //case 5:
                 //case 6:
-                case 2:
-                    selectedPiece = "grey";
-                    isGreyActive = true;
-                    break;
+                //case 2:
+                //    selectedPiece = "grey";
+                //    isGreyActive = true;
+                //    break;
 
                 default:
                     availableMoves = num;
@@ -1064,8 +1066,37 @@ namespace IS_Project.Models
                     selectedWall[1, 1] = yDest;
                 }
             }
-
-            checkWallPosition(originalPos);
+            //logic to deal with players trying to crash the demo by walling themselves
+            BoardSearch ppBFS = new BoardSearch(this);
+            if (ppBFS.isOpponentTrapped(this, true))
+            {
+                gameBoard[selectedWall[0, 0], selectedWall[0, 1]] = "0";
+                gameBoard[selectedWall[1, 0], selectedWall[1, 1]] = "0";
+                if (originalPos.Item1.Item1 > 30)
+                {
+                    selectedWall[0, 0] = originalPos.Item1.Item1;
+                }
+                //if wall was NS
+                else if (originalPos.Item1.Item1 == originalPos.Item2.Item1)
+                {
+                    gameBoard[originalPos.Item1.Item1, originalPos.Item1.Item2] = "3N";
+                    gameBoard[originalPos.Item2.Item1, originalPos.Item2.Item2] = "3S";
+                }
+                //if wall was WE
+                else if (selectedWall[0, 1] == selectedWall[1, 1] || addWallActive)
+                {
+                    gameBoard[originalPos.Item1.Item1, originalPos.Item1.Item2] = "3W";
+                    gameBoard[originalPos.Item2.Item1, originalPos.Item2.Item2] = "3E";
+                }
+                selectedWall[0, 0] = originalPos.Item1.Item1;
+                selectedWall[0, 1] = originalPos.Item1.Item2;
+                selectedWall[1, 0] = originalPos.Item2.Item1;
+                selectedWall[1, 1] = originalPos.Item2.Item2;
+            }
+            else
+            {
+                checkWallPosition(originalPos);
+            }
         }
         //rotates a wall
         public void rotateWall()
@@ -1247,7 +1278,7 @@ namespace IS_Project.Models
                         bluePiece3[1] = 29;
                     }
                 }
-                checkPieceWallCollision(-1, -1, (minotuarPos[0], minotuarPos[0]));
+                checkPieceWallCollision(-1, -1, (minotuarPos[0], minotuarPos[1]));
                 gameBoard[minotuarPos[0], minotuarPos[1]] = "0";
                 gameBoard[xDest, yDest] = "0";
                 availableMoves = 0;

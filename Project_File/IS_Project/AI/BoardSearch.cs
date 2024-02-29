@@ -100,10 +100,32 @@ namespace IS_Project.AI
 
                     if (isValid(adjX, adjY, visited))
                     {
-                        if (_gameBoard.selectedPiece == "mino" && _gameBoard.playerBases.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
+                        if (objective == "5R" && _gameBoard.gameBoard[adjX, adjY] == "5R")
+                        {
+                            while (currentNode.next != null)
+                            {
+                                pathList.Insert(0, currentNode.data);
+                                currentNode = currentNode.next;
+                            }
+
+                            return pathList;
+
+                        }
+                        else if (objective == "5B" && _gameBoard.gameBoard[adjX, adjY] == "5B")
+                        {
+                            while (currentNode.next != null)
+                            {
+                                pathList.Insert(0, currentNode.data);
+                                currentNode = currentNode.next;
+                            }
+
+                            return pathList;
+                        }
+                        else if (_gameBoard.selectedPiece == "mino" &&  _gameBoard.playerBases.ContainsKey(_gameBoard.gameBoard[adjX, adjY]))
                         {
                             continue;
                         }
+                        
                         Node adjNode = new Node((adjX, adjY));
                         adjNode.next = currentNode;
                         adjNode.depth = currentNode.depth + 1;
@@ -116,18 +138,7 @@ namespace IS_Project.AI
                     }
                 }
             }
-            if (objective == "4R")
-            {
-                return BFS(row, col, "5R");
-            }
-            else if (objective == "4B")
-            {
-                return BFS(row, col, "5B");
-            }
-            else
-            {
-                return pathList;
-            }
+            return pathList;
         }
 
         public List<int> getPathLengths(int row, int col, string objective)
@@ -146,12 +157,22 @@ namespace IS_Project.AI
                 pathLengthList.Add(55);
             }
 
-            foreach(var cord in  fastestPath)
+            foreach((int, int) coord in fastestPath)
             {
-                if (!traveledList.ContainsKey(cord))
+                if (!traveledList.ContainsKey(coord))
                 {
-                    traveledList.Add(cord, 0);
+                    if (nwChokepointList.ContainsKey(coord))
+                    {
+                        traveledList.Add(coord, 0);
+                        traveledList.Add(nwChokepointList[coord].Item2, 0);
+                    }
+                    else if (seChokepointList.ContainsKey(coord))
+                    {
+                        traveledList.Add(coord, 0);
+                        traveledList.Add(seChokepointList[coord].Item1, 0);
+                    }
                 }
+
             }
 
             List<(int, int)> secondFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
@@ -164,12 +185,22 @@ namespace IS_Project.AI
                 pathLengthList.Add(60);
             }
 
-            foreach (var cord in secondFastestPath)
+            foreach (var coord in secondFastestPath)
             {
-                if (!traveledList.ContainsKey(cord))
+                if (!traveledList.ContainsKey(coord))
                 {
-                    traveledList.Add(cord, 0);
+                    if (nwChokepointList.ContainsKey(coord))
+                    {
+                        traveledList.Add(coord, 0);
+                        traveledList.Add(nwChokepointList[coord].Item2, 0);
+                    }
+                    else if (seChokepointList.ContainsKey(coord))
+                    {
+                        traveledList.Add(coord, 0);
+                        traveledList.Add(seChokepointList[coord].Item1, 0);
+                    }
                 }
+                
             }
 
             List<(int, int)> thirdFastestPath = findDifferentPlayerRoute(row, col, objective, traveledList);
@@ -269,12 +300,12 @@ namespace IS_Project.AI
             return pathLengthList;
         }
         //if given a list of traversed locations can find a route that uses none of the same chokepoints
-        public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, Dictionary<(int, int), int> dataList)
+        public List<(int, int)> findDifferentPlayerRoute(int row, int col, string objective, Dictionary<(int, int), int> traversedChokepoints)
         {
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
             Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
-            Dictionary<(int, int), int> offLimitCoords = new Dictionary<(int, int), int>();
+            //Dictionary<(int, int), int> offLimitCoords = new Dictionary<(int, int), int>();
             List<(int, int)> pathList = new List<(int, int)>();
             Node currentNode;
 
@@ -282,7 +313,7 @@ namespace IS_Project.AI
             //            |
             //            |
             //            \/
-            foreach (var coords in dataList)
+            /*foreach (var coords in dataList)
             {
                 if (nwChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
                 {
@@ -294,7 +325,7 @@ namespace IS_Project.AI
                     offLimitCoords.Add(coords.Key, 1);
                     offLimitCoords.Add(seChokepointList[coords.Key].Item1, 1);
                 }
-            }
+            }*/
 
             // Mark the starting cell as visited
             // and push it into the queue
@@ -357,7 +388,7 @@ namespace IS_Project.AI
                     int adjY = y + dirVectCol[i];
                     (int, int) adjTuple = (adjX, adjY);
 
-                    if (isValid(adjX, adjY, visited) && !offLimitCoords.ContainsKey(adjTuple))
+                    if (isValid(adjX, adjY, visited) && !traversedChokepoints.ContainsKey(adjTuple))
                     {
                         Node adjNode = new Node(adjTuple);
                         adjNode.next = currentNode;
@@ -647,10 +678,28 @@ namespace IS_Project.AI
         }
         */
         //returns all reachable locations for a given distance
-        public List<(int, int)> getSpecificDistBFS(int row, int col, int dist)
+        public List<(int, int)> getSpecificDistBFS(int row, int col, int dist, bool isBlueTurn)
         {
             List<(int, int)> possibleDestinations = new List<(int, int)>();
-
+            Dictionary<(int,int), int> pieceList;
+            if(isBlueTurn)
+            {
+                pieceList = new Dictionary<(int, int), int>()
+                {
+                    { (_gameBoard.bluePiece1[0], _gameBoard.bluePiece1[1]), 0},
+                    { (_gameBoard.bluePiece2[0], _gameBoard.bluePiece2[1]), 0},
+                    { (_gameBoard.bluePiece3[0], _gameBoard.bluePiece3[1]), 0},
+                };
+            }
+            else
+            {
+                pieceList = new Dictionary<(int, int), int>()
+                {
+                    { (_gameBoard.redPiece1[0], _gameBoard.redPiece1[1]), 0},
+                    { (_gameBoard.redPiece2[0], _gameBoard.redPiece2[1]), 0},
+                    { (_gameBoard.redPiece3[0], _gameBoard.redPiece3[1]), 0},
+                };
+            }
             // Stores indices of the matrix cells
             Queue<Node> queue = new Queue<Node>();
             Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
@@ -677,7 +726,9 @@ namespace IS_Project.AI
                 currentNode = queue.Dequeue();
 
                 //for piece movement i am just looking for, assuming I have _gameboard
-                if (currentNode.depth == dist || _gameBoard.gameBoard[currentNode.data.Item1, currentNode.data.Item2].Contains('7'))
+                if ((currentNode.depth == dist 
+                    || _gameBoard.gameBoard[currentNode.data.Item1, currentNode.data.Item2] == (isBlueTurn ? "7B" : "7R")) 
+                    && !pieceList.ContainsKey(currentNode.data))
                 {
                     possibleDestinations.Add((x, y));
                     continue;
@@ -692,7 +743,7 @@ namespace IS_Project.AI
                     int adjX = x + dirVectRow[i];
                     int adjY = y + dirVectCol[i];
 
-                    if (isValid(adjX, adjY, visited))
+                    if (isValid(adjX, adjY, visited) && currentNode.depth < dist)
                     {
                         Node adjNode = new Node((adjX, adjY));
                         adjNode.next = currentNode;
@@ -778,7 +829,7 @@ namespace IS_Project.AI
             return pathList;
         }
 
-        //returns true if objective found in zone with radius of dist
+        //returns true if objective found in zone with radius of dist (no longer in use)
         public bool isObjInZoneBFS(int row, int col, string objective, int dist)
         {
             // Stores indices of the matrix cells
@@ -883,10 +934,10 @@ namespace IS_Project.AI
                 }
 
                 //for piece movement i am just looking for, assuming I have _gameboard
-                else if (currentNode.depth == 8)
-                {
-                    continue;
-                }
+                //else if ()
+                //{
+                //    continue;
+                //}
 
 
 
@@ -897,7 +948,7 @@ namespace IS_Project.AI
                     int adjX = x + dirVectRow[i];
                     int adjY = y + dirVectCol[i];
 
-                    if (isValid(adjX, adjY, visited))
+                    if (isValid(adjX, adjY, visited) && currentNode.depth < 8)
                     {
                         Node adjNode = new Node((adjX, adjY));
                         adjNode.next = currentNode;
