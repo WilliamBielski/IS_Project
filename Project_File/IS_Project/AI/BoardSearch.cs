@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
@@ -1049,9 +1050,276 @@ namespace IS_Project.AI
             return false;
         }
 
+        //visualizes the fastest routes of a given piece/pieces
+        public void visualizeFitnessFunction(GameBoard gamestate)
+        {
+            //minotaur shit//////////
+            if (gamestate.isBlackActive)
+            {
+                Queue<Node> queue = new Queue<Node>();
+                Dictionary<(int, int), int> visited = new Dictionary<(int, int), int>();
+
+                Node currentNode;
+
+                // Mark the starting cell as visited
+                // and push it into the queue
+                Node n = new Node((gamestate.minotuarPos[0], gamestate.minotuarPos[1]));
+                queue.Enqueue(n);
+                visited.Add(n.data, n.depth);
+
+
+
+                // Iterate while the queue
+                // is not empty
+                while (queue.Count != 0)
+                {
+                    (int, int) cell = queue.FirstOrDefault().data;
+                    int x = cell.Item1;
+                    int y = cell.Item2;
+
+
+                    currentNode = queue.Dequeue();
+                    gamestate.gameBoard[currentNode.data.Item1, currentNode.data.Item2] = "mR";
+
+                    // Goes to the adjacent cells
+                    for (int i = 0; i < 4; i++)
+                    {
+
+                        int adjX = x + dirVectRow[i];
+                        int adjY = y + dirVectCol[i];
+
+                        if (isValid(adjX, adjY, visited) && currentNode.depth < 8 && gamestate.gameBoard[adjX, adjY] != "7R")
+                        {
+                            Node adjNode = new Node((adjX, adjY));
+                            adjNode.next = currentNode;
+                            adjNode.depth = currentNode.depth + 1;
+
+                            queue.Enqueue(adjNode);
+
+                            visited.Add((adjX, adjY), currentNode.depth + 1);
+                        }
+                    }
+                }
+            }
+            /////////////////////////
+
+            List<(int, int)> bluePaths = new List<(int, int)> ();
+            List<(int, int)> blueAltPaths = new List<(int, int)> ();
+            List<(int, int)> redPaths = new List<(int, int)>();
+            List<(int, int)> redAltPaths = new List<(int, int)>();
+            Dictionary<(int, int), int> offLimitCoords = new Dictionary<(int, int), int>();
+
+            /*foreach (var coords in dataList)
+            {
+                if (nwChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
+                {
+                    offLimitCoords.Add(coords.Key, 1);
+                    offLimitCoords.Add(nwChokepointList[coords.Key].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords.Key) && !offLimitCoords.ContainsKey(coords.Key))
+                {
+                    offLimitCoords.Add(coords.Key, 1);
+                    offLimitCoords.Add(seChokepointList[coords.Key].Item1, 1);
+                }
+            }*/
+
+            List<(int, int)> bP1 = BFS(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B");
+            foreach (var coords in bP1)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            
+            }
+            List<(int, int)> apB1 = findDifferentPlayerRoute(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B", offLimitCoords);
+            foreach (var coords in apB1)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+
+            }
+            List<(int, int)> apB2 = findDifferentPlayerRoute(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B", offLimitCoords);
+            foreach (var coords in apB2)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+
+            }
+            List<(int, int)> apB3 = findDifferentPlayerRoute(gamestate.bluePiece1[0], gamestate.bluePiece1[1], "7B", offLimitCoords);
+
+            bP1.RemoveRange((bP1.Count - 1), 1);
+            apB1.RemoveRange((apB1.Count - 1), 1);
+            //apB2.RemoveRange((apB2.Count - 1), 1);
+            //apB3.RemoveRange((apB3.Count - 1), 1);
+            blueAltPaths.AddRange(apB1);
+            //blueAltPaths.AddRange(apB2);
+            //blueAltPaths.AddRange(apB3);
+            
+            foreach (var path in bP1)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "iB";
+            }
+
+            foreach (var path in blueAltPaths)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "apB";
+            }
+            /*offLimitCoords.Clear();
+
+            List<(int, int)> bP2 = BFS(gamestate.bluePiece2[0], gamestate.bluePiece2[1], "7B");
+            foreach (var coords in bP2)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            }
+            List<(int, int)> apB2 = findDifferentPlayerRoute(gamestate.bluePiece2[0], gamestate.bluePiece2[1], "7B", offLimitCoords);
+            offLimitCoords.Clear();
+
+            List<(int, int)> bP3 = BFS(gamestate.bluePiece3[0], gamestate.bluePiece3[1], "7B");
+            foreach (var coords in bP3)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            }
+            List<(int, int)> apB3 = findDifferentPlayerRoute(gamestate.bluePiece3[0], gamestate.bluePiece3[1], "7B", offLimitCoords);
+            offLimitCoords.Clear();
+
+            bP1.RemoveRange((bP1.Count - 1), 1);
+            apB1.RemoveRange((apB1.Count - 1), 1);
+            bP2.RemoveRange(bP2.Count - 1, 1);
+            apB2.RemoveRange((apB2.Count - 1), 1);
+            bP3.RemoveRange(bP3.Count - 1, 1);
+            apB3.RemoveRange((apB3.Count - 1), 1);
+            bluePaths.AddRange(bP1);
+            bluePaths.AddRange(bP2);
+            bluePaths.AddRange(bP3);
+            blueAltPaths.AddRange(apB1);
+            blueAltPaths.AddRange(apB2);
+            blueAltPaths.AddRange(apB3);
+
+            List<(int, int)> rP1 = BFS(gamestate.redPiece1[0], gamestate.redPiece1[1], "7R");
+            foreach (var coords in rP1)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            }
+            List<(int, int)> apR1 = findDifferentPlayerRoute(gamestate.redPiece1[0], gamestate.redPiece1[1], "7R", offLimitCoords);
+            offLimitCoords.Clear();
+
+            List<(int, int)> rP2 = BFS(gamestate.redPiece2[0], gamestate.redPiece2[1], "7R");
+            foreach (var coords in rP2)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            }
+            List<(int, int)> apR2 = findDifferentPlayerRoute(gamestate.redPiece2[0], gamestate.redPiece2[1], "7R", offLimitCoords);
+            offLimitCoords.Clear();
+
+            List<(int, int)> rP3 = BFS(gamestate.redPiece3[0], gamestate.redPiece3[1], "7R");
+            foreach (var coords in rP3)
+            {
+                if (nwChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(nwChokepointList[coords].Item2, 1);
+                }
+                else if (seChokepointList.ContainsKey(coords) && !offLimitCoords.ContainsKey(coords))
+                {
+                    offLimitCoords.Add(coords, 1);
+                    offLimitCoords.Add(seChokepointList[coords].Item1, 1);
+                }
+            }
+            List<(int, int)> apR3 = findDifferentPlayerRoute(gamestate.redPiece3[0], gamestate.redPiece3[1], "7R", offLimitCoords);
+
+            rP1.RemoveRange(rP1.Count - 1, 1);
+            apR1.RemoveRange(apR1.Count - 1, 1);
+            rP2.RemoveRange(rP2.Count - 1, 1);
+            apR2.RemoveRange(apR2.Count - 1, 1);
+            rP3.RemoveRange(rP3.Count - 1, 1);
+            apR3.RemoveRange(apR3.Count - 1, 1);
+            redPaths.AddRange(rP1);
+            redPaths.AddRange(rP2);
+            redPaths.AddRange(rP3);
+            redAltPaths.AddRange(apR1);
+            redAltPaths.AddRange(apR3);
+            redAltPaths.AddRange(apR3);
+            foreach (var path in blueAltPaths)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "apB";
+            }
+            foreach (var path in redAltPaths)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "apR";
+            }
+
+            foreach (var path in bluePaths)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "iB";
+            }
+            foreach (var path in redPaths)
+            {
+                gamestate.gameBoard[path.Item1, path.Item2] = "iR";
+            }
+            */
+        }
 
         //visualizes the paths for testing purposes
-        public List<int> pTester(int row, int col, string objective)
+        public List<int> altRouteTester(int row, int col, string objective)
         {
             List<int> pathLengthList = new List<int>();
             Dictionary<(int, int), int> traveledList = new Dictionary<(int, int), int>();

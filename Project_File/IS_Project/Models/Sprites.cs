@@ -24,6 +24,16 @@ namespace IS_Project.Models
 
         public SpriteFont basicFont;
 
+        public Texture2D redIndicator;
+        public Texture2D blueIndicator;
+
+        public Texture2D chokepointNorth;
+        public Texture2D chokepointSouth;
+        public Texture2D chokepointEast;
+        public Texture2D chokepointWest;
+
+        public Texture2D minotaurRangeTile;
+
         public Sprites()
         {
 
@@ -42,6 +52,15 @@ namespace IS_Project.Models
 
             basicFont = Globals.Content.Load<SpriteFont>("galleryFont");
 
+            redIndicator = Globals.Content.Load<Texture2D>("red_path_indicator");
+            blueIndicator = Globals.Content.Load<Texture2D>("blue_path_indicator");
+
+            chokepointNorth = Globals.Content.Load<Texture2D>("Chokepoint_North");
+            chokepointSouth = Globals.Content.Load<Texture2D>("Chokepoint_South");
+            chokepointEast = Globals.Content.Load<Texture2D>("Chokepoint_East");
+            chokepointWest = Globals.Content.Load<Texture2D>("Chokepoint_West");
+
+            minotaurRangeTile = Globals.Content.Load<Texture2D>("Minorange_tile");
         }
     }
 }

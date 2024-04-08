@@ -24,22 +24,22 @@ namespace IS_Project.Models
 
         public int[] redPiece1 = { 1, 0 };
         public int[] redPiece2 = { 0, 0 };
-        public int[] redPiece3 = { 0, 15 };
+        public int[] redPiece3 = { 0, 1 };
 
         public int[] bluePiece1 = { 29, 28 };
         public int[] bluePiece2 = { 29, 29 };
         public int[] bluePiece3 = { 28, 29 };
 
-        public int[] minotuarPos = { 5, 14 };
+        public int[] minotuarPos = { -5, -5 };
 
         public int[,] selectedWall = { { -2, -2 }, { -2, -2 } };
 
-        public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "4R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
+        public string[,] gameBoard = {  { "5R", "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1"},
                                         { "5R", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1"},
                                         { "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "1", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "3W", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "0", "0", "3W", "0", "0"},
                                         { "0", "0", "3E", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "3E", "0", "0"},
-                                        { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "6", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
+                                        { "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"},
                                         { "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "0", "0", "0"},
                                         { "0", "0", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "1", "0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "0", "0"},
                                         { "0", "0", "0", "0", "0", "1", "0", "0", "3N", "3S", "0", "0", "1", "1", "0", "0", "1", "1", "0", "0", "3N", "3S", "0", "0", "1", "0", "0", "0", "0", "0"},
@@ -95,8 +95,10 @@ namespace IS_Project.Models
             { ((27, 8), (27, 9)), ((27, 8), (27, 9)) },
             { ((0, 10), (1, 10)), ((0, 10), (1, 10)) },
             { ((28, 10), (29, 10)), ((28, 10), (29, 10)) },
+            { ((9, 11), (10, 11)), ((9, 11), (10, 11)) },
             { ((12, 11), (13, 11)), ((12, 11), (13, 11)) },
             { ((16, 11), (17, 11)), ((16, 11), (17, 11)) },
+            { ((19, 11), (20, 11)), ((19, 11), (20, 11)) },
             { ((11, 12), (11, 13)), ((11, 12), (11, 13)) },
             { ((18, 12), (18, 13)), ((18, 12), (18, 13)) },
             { ((0, 13), (1, 13)), ((0, 13), (1, 13)) },
@@ -111,8 +113,10 @@ namespace IS_Project.Models
             { ((28, 16), (29, 16)), ((28, 16), (29, 16)) },
             { ((11, 16), (11, 17)), ((11, 16), (11, 17)) },
             { ((18, 16), (18, 17)), ((18, 16), (18, 17)) },
+            { ((9, 18), (10, 18)), ((9, 18), (10, 18)) },
             { ((12, 18), (13, 18)), ((12, 18), (13, 18)) },
             { ((16, 18), (17, 18)), ((16, 18), (17, 18)) },
+            { ((19, 18), (20, 18)), ((19, 18), (20, 18)) },
             { ((0, 19), (1, 19)), ((0, 19), (1, 19)) },
             { ((28, 19), (29, 19)), ((28, 19), (29, 19)) },
             { ((2, 20), (2, 21)), ((2, 20), (2, 21)) },
@@ -133,12 +137,25 @@ namespace IS_Project.Models
             { ((19, 24), (20, 24)), ((19, 24), (20, 24)) },
             { ((24, 24), (25, 24)), ((24, 24), (25, 24)) },
             { ((28, 24), (29, 24)), ((28, 24), (29, 24)) },
+            { ((14, 27), (15, 27)), ((14, 27), (15, 27)) },
             { ((7, 28), (7, 29)), ((7, 28), (7, 29)) },
             { ((11, 28), (11, 29)), ((11, 28), (11, 29)) },
             { ((13, 28), (13, 29)), ((13, 28), (13, 29)) },
             { ((16, 28), (16, 29)), ((16, 28), (16, 29)) },
             { ((18, 28), (18, 29)), ((18, 28), (18, 29)) },
             { ((22, 28), (22, 29)), ((22, 28), (22, 29)) },
+
+            //for the chokepoint visual
+            //{ ((,), (,)), ((,), (,)) },
+            /*{ ((6,11), (6,12)), ((6,11), (6,12)) },
+            { ((23,11), (23,12)), ((23,11), (23,12)) },
+            { ((6,17), (6,18)), ((6,17), (6,18)) },
+            { ((23,17), (23,18)), ((23,17), (23,18)) },
+
+            { ((3,7), (4,7)), ((3,7), (4,7)) },
+            { ((25,7), (26,7)), ((25,7), (26,7)) },
+            { ((3,22), (4,22)), ((3,22), (4,22)) },
+            { ((25,22), (26,22)), ((25,22), (26,22)) },*/
         };
 
         public Dictionary<((int, int), (int, int)), ((int, int), (int, int))> wallPositionList = new Dictionary<((int, int), (int, int)), ((int, int), (int, int))>()
@@ -151,6 +168,7 @@ namespace IS_Project.Models
             { ((21, 20), (21, 21)), ((21, 20), (21, 21)) },
             { ((3, 27), (4, 27)), ((3, 27), (4, 27)) },
             { ((25, 27), (26, 27)), ((25, 27), (26, 27)) },
+            //{ ((18, 16),(18, 17)), ((18, 16), (18, 17)) }
         };
 
         public bool isRedTurn = true;
@@ -158,7 +176,7 @@ namespace IS_Project.Models
         public bool blueVictory = false;
 
         public bool isGreyActive = false;
-        public bool isBlackActive = true;
+        public bool isBlackActive = false;
         public bool addWallActive = false;
 
         public string selectedPiece = "";
@@ -344,6 +362,27 @@ namespace IS_Project.Models
             //logic for end-turn key (enter key)
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
+                //path visualizers
+                //TurnBasedAI tur = new TurnBasedAI(this);
+                //BoardSearch tab = new BoardSearch(this);
+                //boardState = tur.getUtility(this);
+                //tab.visualizeFitnessFunction(this);
+
+                //chokepoint visualizers
+                /*foreach(var page in availableChokepointList)
+                {
+                    if (page.Key.Item1.Item1 == page.Key.Item2.Item1)
+                    {
+                        gameBoard[page.Key.Item1.Item1, page.Key.Item1.Item2] = "CN";
+                        gameBoard[page.Key.Item2.Item1, page.Key.Item2.Item2] = "CS";
+                    }
+                    else
+                    {
+                        gameBoard[page.Key.Item1.Item1, page.Key.Item1.Item2] = "CW";
+                        gameBoard[page.Key.Item2.Item1, page.Key.Item2.Item2] = "CE";
+                    }
+                }*/
+
                 endTurn();
             }
 
@@ -443,6 +482,7 @@ namespace IS_Project.Models
 
         public void Draw()
         {
+            
             //sets up the playing board grid
             for (int i = 0; i < gridSize; ++i)
             {
@@ -474,7 +514,7 @@ namespace IS_Project.Models
                             Globals.SpriteBatch.Draw(leftWallTile, new Vector2(i * tileSize, j * tileSize), Color.White);
                             break;
 
-                        //player sprites
+                        //player base sprites
 
                         case "5R":
                         case "7R":
@@ -486,6 +526,46 @@ namespace IS_Project.Models
                             Globals.SpriteBatch.Draw(blueTile, new Vector2(i * tileSize, j * tileSize), Color.White);
                             break;
 
+                        //path visula indicators
+                        case "apR":
+                            Globals.SpriteBatch.Draw(pathTile, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            Globals.SpriteBatch.Draw(redIndicator, new Vector2(i * tileSize, j * tileSize), Color.White * 0.5f);
+                            break;
+
+                        case "apB":
+                            Globals.SpriteBatch.Draw(pathTile, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            Globals.SpriteBatch.Draw(blueIndicator, new Vector2(i * tileSize, j * tileSize), Color.White * 0.5f);
+                            break;
+
+                        case "iR":
+                            Globals.SpriteBatch.Draw(redIndicator, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
+
+                        case "iB":
+                            Globals.SpriteBatch.Draw(blueIndicator, new Vector2(i * tileSize, j * tileSize), Color.LightBlue);
+                            break;
+
+                        //chokepoint visuals///
+
+                        case "CN":
+                            Globals.SpriteBatch.Draw(chokepointNorth, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
+
+                        case "CS":
+                            Globals.SpriteBatch.Draw(chokepointSouth, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
+
+                        case "CE":
+                            Globals.SpriteBatch.Draw(chokepointEast, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
+
+                        case "CW":
+                            Globals.SpriteBatch.Draw(chokepointWest, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
+
+                        case "mR":
+                            Globals.SpriteBatch.Draw(minotaurRangeTile, new Vector2(i * tileSize, j * tileSize), Color.White);
+                            break;
                     }
                 }
             }
@@ -527,10 +607,10 @@ namespace IS_Project.Models
             Globals.SpriteBatch.DrawString(basicFont, "blue2: {" + bluePiece2[0] + "," + bluePiece2[1] + "}", new Vector2(1488, 800), Color.Black);
             Globals.SpriteBatch.DrawString(basicFont, "blue3: {" + bluePiece3[0] + "," + bluePiece3[1] + "}", new Vector2(1488, 840), Color.Black);
             Globals.SpriteBatch.DrawString(basicFont, "last blue move: "+ LastBlueMove, new Vector2(1488, 880), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, "boardState: " + boardState, new Vector2(1488, 920), Color.Black);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 980), redVictory ? Color.Red : Color.Blue);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1010), redVictory ? Color.Red : Color.Blue);
-            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1040), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, "Fitness Value: " + boardState, new Vector2(1488, 940), Color.Black);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1000), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1030), redVictory ? Color.Red : Color.Blue);
+            Globals.SpriteBatch.DrawString(basicFont, redVictory ? "Red Wins!!!" : blueVictory ? "Blue Wins!!!" : "", new Vector2(1488, 1060), redVictory ? Color.Red : Color.Blue);
 
             Globals.SpriteBatch.Draw(minotaur, minotuarPos[0] >= 0 ? new Vector2(minotuarPos[0] * tileSize, minotuarPos[1] * tileSize) : 
                                                                     new Vector2((float)(14.5 * tileSize), (float)(14.5 * tileSize)), Color.White);
@@ -550,24 +630,24 @@ namespace IS_Project.Models
                 //case 4:
                 //case 5:
                 //case 6:
-                //case 1:
-                //    selectedPiece = "mino";
-                //    availableMoves = 8;
-                //    break;
-
                 case 1:
-                    availableMoves = 3;
+                    selectedPiece = "mino";
+                    availableMoves = 8;
                     break;
+
+                //case 1:
+                //    availableMoves = 3;
+                //    break;
 
                 //case 1:
                 //case 3:
                 //case 4:
                 //case 5:
                 //case 6:
-                //case 2:
-                //    selectedPiece = "grey";
-                //    isGreyActive = true;
-                //    break;
+                case 2:
+                    selectedPiece = "grey";
+                    isGreyActive = true;
+                    break;
 
                 default:
                     availableMoves = num;

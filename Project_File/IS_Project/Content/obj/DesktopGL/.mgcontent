@@ -4,20 +4,34 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/blue-player-piece.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/blue-player-tile.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/galleryFont.spritefont</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/hedge-tile.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/minotuar-tile.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/path-tile.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/red-player-piece.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/red-player-tile.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/wall-tile-bottom.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/wall-tile-left.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/wall-tile-right.png</File>
-    <File>C:/Users/popco/OneDrive/Documents/IS-Project/Project_File/IS_Project/Content/wall-tile-top.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/blue_path_indicator.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/blue-player-piece.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/blue-player-tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/Chokepoint_East.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/Chokepoint_North.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/Chokepoint_South.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/Chokepoint_West.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/galleryFont.spritefont</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/hedge-tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/Minorange_tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/minotuar-tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/path-tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/red_path_indicator.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/red-player-piece.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/red-player-tile.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/wall-tile-bottom.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/wall-tile-left.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/wall-tile-right.png</File>
+    <File>C:/Users/popco/OneDrive/Documents/IS_Project/Project_File/IS_Project/Content/wall-tile-top.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -72,3 +72,10 @@ C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\obj\Debug\n
 C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\obj\Debug\net6.0\IS_Project.pdb
 C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\obj\Debug\net6.0\IS_Project.genruntimeconfig.cache
 C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\obj\Debug\net6.0\ref\IS_Project.dll
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\blue_path_indicator.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\red_path_indicator.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\Chokepoint_East.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\Chokepoint_North.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\Chokepoint_South.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\Chokepoint_West.xnb
+C:\Users\popco\OneDrive\Documents\IS_Project\Project_File\IS_Project\bin\Debug\net6.0\Content\Minorange_tile.xnb
